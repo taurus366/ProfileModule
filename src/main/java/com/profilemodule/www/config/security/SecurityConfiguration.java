@@ -1,5 +1,6 @@
 package com.profilemodule.www.config.security;
 
+import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,8 +18,11 @@ public class SecurityConfiguration extends VaadinWebSecurity {
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers(new AntPathRequestMatcher("/images/*.png")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/line-awesome/**/*.svg")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/*")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
         );
 
+        super.configure(http);
+        setLoginView(http, "/login");
     }
 }
