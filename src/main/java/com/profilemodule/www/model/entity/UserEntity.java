@@ -8,13 +8,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class UserEntity extends BaseEntity {
 
     @Column(nullable = false)
@@ -30,5 +33,5 @@ public class UserEntity extends BaseEntity {
     private String locale = "en_EN";
 
     @ManyToMany
-    private List<GroupEntity> groups;
+    private Set<GroupEntity> groups = new HashSet<>();
 }

@@ -4,13 +4,15 @@ import com.profilemodule.www.model.enums.PermissionEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "permission")
+@Table(name = "permissions")
 public class PermissionEntity extends BaseEntity {
 
     @Column(nullable = false)

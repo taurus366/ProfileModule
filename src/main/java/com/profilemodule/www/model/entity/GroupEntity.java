@@ -1,27 +1,25 @@
 package com.profilemodule.www.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.profilemodule.www.model.enums.PermissionEnum;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "group")
+@Table(name = "groups")
 public class GroupEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
 
-    @OneToMany()
-    private List<PermissionEntity> permissions;
-
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<PermissionEntity> permissions = new ArrayList<>();
 
 }

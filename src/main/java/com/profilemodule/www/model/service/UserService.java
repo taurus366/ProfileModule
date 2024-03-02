@@ -11,6 +11,7 @@ public interface UserService {
     UserEntity update(UserEntity entity);
     List<UserEntity> getAll();
     boolean delete(UserEntity entity);
+    UserEntity findByUsername(String username);
 
 
 }
