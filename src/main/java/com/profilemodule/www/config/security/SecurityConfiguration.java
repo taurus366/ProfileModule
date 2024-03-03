@@ -18,8 +18,12 @@ public class SecurityConfiguration extends VaadinWebSecurity {
         http.authorizeHttpRequests((requests) -> requests
                 .requestMatchers(new AntPathRequestMatcher("/images/*.png")).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/line-awesome/**/*.svg")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/*")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+//                .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+        );
+        http.formLogin((form) -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/user", true)
+                .permitAll()
         );
 
         super.configure(http);
