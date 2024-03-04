@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Transactional
 public class UserListImpl extends VerticalLayout {
 
+    private final static String ADDED_USER_MESSAGE = "Successfully created new User";
     public final static String VIEW = "user_list";
     private static final String PATTERN_FORMAT = "dd/MM/yyyy HH:mm";
 
@@ -101,7 +102,7 @@ public class UserListImpl extends VerticalLayout {
                user.setPassword(passwordEncoder.encode(passwordField.getValue()));
                userRepository.save(user);
                 dialog.close();
-                Notification.show("Successfully created new User", 5000, Notification.Position.MIDDLE)
+                Notification.show(ADDED_USER_MESSAGE, 5000, Notification.Position.MIDDLE)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             }
         });
