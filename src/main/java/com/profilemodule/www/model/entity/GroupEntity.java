@@ -19,7 +19,7 @@ public class GroupEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<PermissionEntity> permissions = new ArrayList<>();
 
 }

@@ -7,13 +7,16 @@ import com.profilemodule.www.model.enums.PermissionEnum;
 import com.profilemodule.www.model.repository.GroupRepository;
 import com.profilemodule.www.model.repository.PermissionRepository;
 import com.profilemodule.www.model.repository.UserRepository;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
+import org.springframework.transaction.annotation.Transactional;
 @Component
 public class initDataBase implements CommandLineRunner {
 
@@ -32,13 +35,18 @@ public class initDataBase implements CommandLineRunner {
 
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
 
-        initAdmin();
+//        initAdmin();
 
     }
 
-    private void initAdmin() {
+
+    protected void initAdmin() {
+
+//        Session session =
+
         if(userRepository.findAll().isEmpty()) {
             final UserEntity admin = new UserEntity();
             admin.setName("Admin");
@@ -47,12 +55,26 @@ public class initDataBase implements CommandLineRunner {
             userRepository.save(admin);
         }
 
+        if(groupRepository.findAll().isEmpty()) {
+
+            PermissionEntity permission = new PermissionEntity();
+            permission.setPermission(PermissionEnum.VIEW);
+
+            GroupEntity entity = new GroupEntity();
+            entity.getPermissions().add(permission);
+            entity.setName("ADMIN");
+            groupRepository.save(entity);
+        }
+
+
         final UserEntity admin = userRepository.findByUsername("admin");
 
+
         if(!groupRepository.findAll().isEmpty() && admin != null) {
+            Hibernate.initialize(admin.getGroups());
 
             final List<GroupEntity> groups = groupRepository.findAll();
-            admin.setGroups(new HashSet<>(groups));
+            admin.getGroups().addAll(new HashSet<>(groups));
             userRepository.save(admin);
         }
 

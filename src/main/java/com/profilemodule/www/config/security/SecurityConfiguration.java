@@ -1,6 +1,5 @@
 package com.profilemodule.www.config.security;
 
-import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,6 +24,13 @@ public class SecurityConfiguration extends VaadinWebSecurity {
                 .defaultSuccessUrl("/user", true)
                 .permitAll()
         );
+
+//        http.logout((logout) -> logout
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/login")
+//                .invalidateHttpSession(true)
+//                .deleteCookies("JSESSIONID")
+//        );
 
         super.configure(http);
         setLoginView(http, "/login");

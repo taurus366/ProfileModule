@@ -46,7 +46,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .stream()
                 .flatMap(group -> group.getPermissions()
                         .stream()
-                        .map(permission -> new SimpleGrantedAuthority(String.format("%s_%s", group.getName().toUpperCase(), permission.getPermission().name().toUpperCase()))))
+                        .map(permission -> new SimpleGrantedAuthority(String.format("%s%s_%s", "ROLE_", group.getName().toUpperCase(), permission.getPermission().name().toUpperCase()))))
                 .toList();
         return permissions;
     }

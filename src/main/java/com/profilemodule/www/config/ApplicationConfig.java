@@ -1,5 +1,6 @@
 package com.profilemodule.www.config;
 
+import com.vaadin.flow.dom.Element;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
