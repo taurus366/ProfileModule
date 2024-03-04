@@ -38,7 +38,7 @@ public class initDataBase implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
-//        initAdmin();
+        initAdmin();
 
     }
 
