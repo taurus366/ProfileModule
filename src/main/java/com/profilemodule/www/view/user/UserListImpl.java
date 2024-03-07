@@ -1,10 +1,14 @@
 package com.profilemodule.www.view.user;
 
+import com.profilemodule.www.model.entity.GroupEntity;
 import com.profilemodule.www.model.entity.UserEntity;
+import com.profilemodule.www.model.repository.GroupRepository;
 import com.profilemodule.www.model.repository.UserRepository;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -25,7 +29,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -38,11 +45,13 @@ public class UserListImpl extends VerticalLayout {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final GroupRepository groupRepository;
 
 
-    public UserListImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserListImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, GroupRepository groupRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.groupRepository = groupRepository;
     }
 
 
@@ -57,6 +66,8 @@ public class UserListImpl extends VerticalLayout {
         final Grid<UserEntity> userEntityGrid = initGrid();
         verticalLayout.add(userEntityGrid);
 
+        userEntityGrid.addItemDoubleClickListener(event -> createUpdateItemDialog(event).open());
+
         return verticalLayout;
     }
 
@@ -68,7 +79,7 @@ public class UserListImpl extends VerticalLayout {
     }
 
     private Dialog createNewItemDialog() {
-        final Dialog dialog = getDialog();
+        final Dialog dialog = getNewItemDialog();
 
         Button saveBtn = new Button(VaadinIcon.CHECK.create(), event -> {
             AtomicBoolean isReady = new AtomicBoolean(true);
@@ -114,10 +125,22 @@ public class UserListImpl extends VerticalLayout {
         return dialog;
     }
 
+    private Dialog createUpdateItemDialog(ItemDoubleClickEvent<UserEntity> users) {
+        final Dialog updateItemDialog = getUpdateItemDialog(users.getItem());
+
+        Button saveBtn = new Button(VaadinIcon.CHECK.create(), event -> {});
+
+        Button cancelBtn = new Button(VaadinIcon.CLOSE.create(), event -> updateItemDialog.close());
+        cancelBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+        updateItemDialog.getFooter().add(saveBtn, cancelBtn);
+        return updateItemDialog;
+    };
+
     private TextField nameField;
     private TextField usernameField;
     private PasswordField passwordField;
-    private Dialog getDialog() {
+    private Dialog getNewItemDialog() {
         VerticalLayout layout = new VerticalLayout();
         Dialog dialog = new Dialog();
         dialog.setCloseOnEsc(false);
@@ -144,6 +167,57 @@ public class UserListImpl extends VerticalLayout {
         passwordField.setPrefixComponent(VaadinIcon.PASSWORD.create());
 
         layout.add(nameField, usernameField, passwordField);
+        dialog.add(layout);
+
+        return dialog;
+    }
+
+
+    private MultiSelectComboBox<GroupEntity> multiSelectComboBox;
+    private Dialog getUpdateItemDialog(UserEntity user) {
+        VerticalLayout layout = new VerticalLayout();
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnEsc(true);
+        dialog.setCloseOnOutsideClick(false);
+
+        nameField = new TextField();
+        nameField.setRequired(true);
+        nameField.setErrorMessage("Please fill the field");
+        nameField.setRequiredIndicatorVisible(true);
+        nameField.setPrefixComponent(VaadinIcon.USER.create());
+        nameField.setValue(user.getName());
+
+        usernameField = new TextField();
+        usernameField.setRequired(true);
+        usernameField.setErrorMessage("Please fill the field");
+        usernameField.setRequiredIndicatorVisible(true);
+        usernameField.setPrefixComponent(VaadinIcon.USER_CARD.create());
+        usernameField.setValue(user.getUsername());
+
+        passwordField = new PasswordField();
+        passwordField.setRequired(true);
+        passwordField.setErrorMessage("Please fill the field");
+        passwordField.setRequiredIndicatorVisible(true);
+        passwordField.setPrefixComponent(VaadinIcon.PASSWORD.create());
+
+        final List<GroupEntity> allGroups = groupRepository.findAll();
+        final List<GroupEntity> selectedList = allGroups
+                .stream()
+                .filter(u -> user.getGroups()
+                        .stream()
+                        .anyMatch(groupEntity -> Objects.equals(groupEntity.getId(), u.getId()))
+                ).toList();
+
+        multiSelectComboBox = new MultiSelectComboBox<>();
+        multiSelectComboBox.setItems(allGroups);
+        multiSelectComboBox.setRenderer(new TextRenderer<>(item -> String.format("%s", item.getName())));
+        multiSelectComboBox.select(selectedList);
+        multiSelectComboBox.setItemLabelGenerator(GroupEntity::getName);
+//        final Set<GroupEntity> selectedItems = multiSelectComboBox.getSelectedItems();
+
+
+
+        layout.add(nameField, usernameField, passwordField, multiSelectComboBox);
         dialog.add(layout);
 
         return dialog;
