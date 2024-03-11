@@ -17,6 +17,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.renderer.TextRenderer;
 import org.hibernate.Hibernate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,17 +33,19 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 @Component
 @Transactional
-public class UserListImpl extends VerticalLayout {
+public class UserListViewImpl extends VerticalLayout {
 
-    private final static String ADDED_USER_MESSAGE = "Successfully created new User";
+    public final String ADDED_USER_MESSAGE = "Successfully created new User";
+    public final String UPDATED_USER_MESSAGE = "Successfully updated User";
+    public final String DELETED_USER_MESSAGE = "Successfully deleted User";
+    public final int NOTIFY_DURATION = 5000;
+    public final Notification.Position NOTIFY_POSITION = Notification.Position.MIDDLE;
     public final static String VIEW = "user_list";
-    private static final String PATTERN_FORMAT = "dd/MM/yyyy HH:mm";
+    public final String PATTERN_FORMAT = "dd/MM/yyyy HH:mm";
 
 
     private final UserRepository userRepository;
@@ -48,7 +53,7 @@ public class UserListImpl extends VerticalLayout {
     private final GroupRepository groupRepository;
 
 
-    public UserListImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, GroupRepository groupRepository) {
+    public UserListViewImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, GroupRepository groupRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.groupRepository = groupRepository;
@@ -113,7 +118,7 @@ public class UserListImpl extends VerticalLayout {
                user.setPassword(passwordEncoder.encode(passwordField.getValue()));
                userRepository.save(user);
                 dialog.close();
-                Notification.show(ADDED_USER_MESSAGE, 5000, Notification.Position.MIDDLE)
+                Notification.show(ADDED_USER_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             }
         });
@@ -128,10 +133,63 @@ public class UserListImpl extends VerticalLayout {
     private Dialog createUpdateItemDialog(ItemDoubleClickEvent<UserEntity> users) {
         final Dialog updateItemDialog = getUpdateItemDialog(users.getItem());
 
-        Button saveBtn = new Button(VaadinIcon.CHECK.create(), event -> {});
-
         Button cancelBtn = new Button(VaadinIcon.CLOSE.create(), event -> updateItemDialog.close());
         cancelBtn.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
+        Button saveBtn = new Button(VaadinIcon.CHECK.create(), event -> {
+            AtomicBoolean isReady = new AtomicBoolean(true);
+            AtomicBoolean isPasswordChanged = new AtomicBoolean(false);
+            updateItemDialog.getChildren().toList().get(0).getChildren().forEach(component -> {
+
+                if(component instanceof TextField) {
+                    if(((TextField) component).getValue().isEmpty() || ((TextField) component).getValue().isBlank()) {
+                        isReady.set(false);
+                        ((TextField) component).setInvalid(true);
+                    } else {
+                        ((TextField) component).setInvalid(false);
+                    }
+                }
+                else if(component instanceof PasswordField) {
+                    isPasswordChanged.set(!((PasswordField) component).getValue().isEmpty());
+                }
+            });
+            if(isReady.get()) {
+                UserEntity user = users.getItem();
+
+                user.setName(nameField.getValue());
+                user.setUsername(usernameField.getValue());
+                user.setGroups(multiSelectComboBox.getSelectedItems());
+                if(isPasswordChanged.get())
+                    user.setPassword(passwordEncoder.encode(passwordField.getValue()));
+
+                userRepository.save(user);
+                cancelBtn.click();
+                Notification.show(UPDATED_USER_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
+                        .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            }
+        });
+
+        Button deleteBtn = new Button(VaadinIcon.TRASH.create(), event -> {
+
+                try {
+                    userRepository.deleteById(users.getItem().getId());
+                } catch (Exception e) {
+                    Notification.show(e.getMessage(), NOTIFY_DURATION, NOTIFY_POSITION)
+                            .addThemeVariants(NotificationVariant.LUMO_ERROR);
+                }
+
+                cancelBtn.click();
+            Notification.show(DELETED_USER_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        });
+
+        Authentication securityContextHolder = SecurityContextHolder.getContext().getAuthentication();
+
+        final UserDetails principal = (UserDetails) securityContextHolder.getPrincipal();
+        final UserEntity byUsername = userRepository.findByUsername(principal.getUsername());
+
+        if(!Objects.equals(users.getItem().getId(), byUsername.getId()))
+            updateItemDialog.getFooter().add(deleteBtn);
 
         updateItemDialog.getFooter().add(saveBtn, cancelBtn);
         return updateItemDialog;
