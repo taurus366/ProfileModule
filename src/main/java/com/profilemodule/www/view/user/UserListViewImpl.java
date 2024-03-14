@@ -44,7 +44,6 @@ public class UserListViewImpl extends VerticalLayout {
     public final String DELETED_USER_MESSAGE = "Successfully deleted User";
     public final int NOTIFY_DURATION = 5000;
     public final Notification.Position NOTIFY_POSITION = Notification.Position.MIDDLE;
-    public final static String VIEW = "user_list";
     public final String PATTERN_FORMAT = "dd/MM/yyyy HH:mm";
 
 
@@ -131,6 +130,7 @@ public class UserListViewImpl extends VerticalLayout {
     }
 
     private Dialog createUpdateItemDialog(ItemDoubleClickEvent<UserEntity> users) {
+
         final Dialog updateItemDialog = getUpdateItemDialog(users.getItem());
 
         Button cancelBtn = new Button(VaadinIcon.CLOSE.create(), event -> updateItemDialog.close());

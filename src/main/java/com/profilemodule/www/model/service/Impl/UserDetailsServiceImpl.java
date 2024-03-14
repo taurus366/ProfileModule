@@ -44,12 +44,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         List<SimpleGrantedAuthority> permissions = userGroups
                 .stream()
-                .flatMap(group -> group.getPermissions()
+                .flatMap(entity -> entity.getScopes()
                         .stream()
-                        .map(permission -> new SimpleGrantedAuthority(String.format("%s%s_%s", "ROLE_", group.getName().toUpperCase(), permission.getPermission().name().toUpperCase()))))
+                        .flatMap(scopeEntity -> scopeEntity.getPermissions()
+                                .stream()
+                                .map(permissionEnum -> new SimpleGrantedAuthority(String.format("%s%s_%s", "ROLE_", scopeEntity.getName().toUpperCase(), permissionEnum.name().toUpperCase())))))
                 .toList();
+
         return permissions;
-    }
+    }}
+
 
 //    public void reloadAuthorities(String username) {
 //        UserDetails userDetails = loadUserByUsername(username);
@@ -57,7 +61,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 //        SecurityContextHolder.getContext().setAuthentication(authentication);
 //    }
 
-}
+//}
 
 //        List<GrantedAuthority> g = new ArrayList<>();
 //        g.add(new SimpleGrantedAuthority("ROLE_ABOUT"));

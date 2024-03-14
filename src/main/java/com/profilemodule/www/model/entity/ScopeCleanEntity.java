@@ -1,7 +1,8 @@
 package com.profilemodule.www.model.entity;
 
-import com.profilemodule.www.model.enums.PermissionEnum;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,11 +13,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "permissions")
-public class PermissionEntity extends BaseEntity {
+@Table(name = "scope_clear")
+public class ScopeCleanEntity extends BaseEntity {
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private PermissionEnum permission;
-
+    private String name;
 }
