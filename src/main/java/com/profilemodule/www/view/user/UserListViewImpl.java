@@ -43,7 +43,7 @@ public class UserListViewImpl extends VerticalLayout {
     public final String UPDATED_USER_MESSAGE = "Successfully updated User";
     public final String DELETED_USER_MESSAGE = "Successfully deleted User";
     public final int NOTIFY_DURATION = 5000;
-    public final Notification.Position NOTIFY_POSITION = Notification.Position.MIDDLE;
+    public final Notification.Position NOTIFY_POSITION = Notification.Position.BOTTOM_STRETCH;
     public final String PATTERN_FORMAT = "dd/MM/yyyy HH:mm";
 
 

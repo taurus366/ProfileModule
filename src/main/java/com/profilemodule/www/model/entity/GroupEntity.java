@@ -28,9 +28,6 @@ public class GroupEntity extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    private List<PermissionEntity> permissions = new ArrayList<>();
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.ALL, CascadeType.REMOVE}, fetch = FetchType.EAGER, orphanRemoval = true)
     private Set<ScopeEntity> scopes = new HashSet<>();
 }

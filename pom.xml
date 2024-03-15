@@ -170,6 +170,14 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-combo-box-flow</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-accordion-flow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-list-box-flow</artifactId>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

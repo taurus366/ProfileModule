@@ -11,5 +11,10 @@ public interface GroupService {
     boolean delete(GroupEntity entity);
     Optional<GroupEntity> get(Long id);
     GroupEntity update(GroupEntity entity);
+
+    GroupEntity save(GroupEntity entity);
+
+    boolean deleteById(Long id);
+
 //    GroupEntity findByPermissions(String name);
 }

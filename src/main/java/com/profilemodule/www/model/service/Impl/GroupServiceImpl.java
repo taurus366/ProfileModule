@@ -38,6 +38,17 @@ public class GroupServiceImpl implements GroupService {
         return groupRepository.save(entity);
     }
 
+    @Override
+    public GroupEntity save(GroupEntity entity) {
+        return groupRepository.save(entity);
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+         groupRepository.deleteById(id);
+        return true;
+    }
+
 //    @Override
 //    public GroupEntity findByPermissions(List<PermissionEnum> permissionEnumList) {
 ////        return groupRepository.findByPermissions(permissionEnumList);
