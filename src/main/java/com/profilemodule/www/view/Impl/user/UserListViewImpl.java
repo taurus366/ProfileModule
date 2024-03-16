@@ -1,4 +1,4 @@
-package com.profilemodule.www.view.user;
+package com.profilemodule.www.view.Impl.user;
 
 import com.profilemodule.www.model.entity.GroupEntity;
 import com.profilemodule.www.model.entity.UserEntity;

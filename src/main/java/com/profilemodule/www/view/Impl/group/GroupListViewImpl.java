@@ -1,4 +1,4 @@
-package com.profilemodule.www.view.group;
+package com.profilemodule.www.view.Impl.group;
 
 import com.profilemodule.www.model.entity.GroupEntity;
 import com.profilemodule.www.model.entity.ScopeCleanEntity;
