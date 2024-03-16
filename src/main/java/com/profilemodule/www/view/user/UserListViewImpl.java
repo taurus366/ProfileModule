@@ -119,6 +119,7 @@ public class UserListViewImpl extends VerticalLayout {
                 dialog.close();
                 Notification.show(ADDED_USER_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                reloadGrid();
             }
         });
 
@@ -166,6 +167,7 @@ public class UserListViewImpl extends VerticalLayout {
                 cancelBtn.click();
                 Notification.show(UPDATED_USER_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                reloadGrid();
             }
         });
 
@@ -181,6 +183,7 @@ public class UserListViewImpl extends VerticalLayout {
                 cancelBtn.click();
             Notification.show(DELETED_USER_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            reloadGrid();
         });
 
         Authentication securityContextHolder = SecurityContextHolder.getContext().getAuthentication();

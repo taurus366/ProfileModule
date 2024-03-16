@@ -133,6 +133,7 @@ public class GroupListViewImpl extends VerticalLayout {
                 cancelBtn.click();
                 Notification.show(UPDATED_GROUP_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                reloadGrid();
             }
         });
 
@@ -148,6 +149,7 @@ public class GroupListViewImpl extends VerticalLayout {
             cancelBtn.click();
             Notification.show(DELETED_GROUP_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            reloadGrid();
         });
 
 
@@ -214,22 +216,6 @@ public class GroupListViewImpl extends VerticalLayout {
             }
         }
 
-
-//        for (Map.Entry<String, MultiSelectListBox<String>> boxEntry : boxMap.entrySet()) {
-//            System.out.println(boxEntry.getKey());
-//            System.out.println(String.join("", boxEntry.getValue().getSelectedItems()));
-//        }
-
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-//        executorService.schedule(() -> {
-//            System.out.println("-".repeat(10));
-//            for (Map.Entry<String, MultiSelectListBox<String>> boxEntry : boxMap.entrySet()) {
-//                System.out.println(boxEntry.getKey());
-//                System.out.println(String.join("", boxEntry.getValue().getSelectedItems()));
-//            }
-//        }, 5, TimeUnit.SECONDS);
-
-
         layout.add(nameField, accordion);
         dialog.add(layout);
 
@@ -268,6 +254,7 @@ public class GroupListViewImpl extends VerticalLayout {
                 dialog.close();
                 Notification.show(ADDED_GROUP_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                reloadGrid();
             }
         });
 
