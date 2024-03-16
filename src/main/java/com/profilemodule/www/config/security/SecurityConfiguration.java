@@ -15,9 +15,14 @@ public class SecurityConfiguration extends VaadinWebSecurity {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests((requests) -> requests
-                .requestMatchers(new AntPathRequestMatcher("/images/*.png")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/line-awesome/**/*.svg")).permitAll()
-//                .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/images/*.png")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/line-awesome/**/*.svg")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/home")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/fonts/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
         );
         http.formLogin((form) -> form
                 .loginPage("/login")
