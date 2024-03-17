@@ -1,6 +1,7 @@
 package com.profilemodule.www.init;
 
 import com.profilemodule.www.model.entity.*;
+import com.profilemodule.www.model.enums.LanguageEnum;
 import com.profilemodule.www.model.enums.PermissionEnum;
 import com.profilemodule.www.model.repository.*;
 import org.hibernate.Hibernate;
@@ -9,10 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +25,15 @@ public class initDataBase implements CommandLineRunner {
     private final GroupRepository groupRepository;
     private final ScopeRepository scopeRepository;
     private final ScopeCleanRepository scopeCleanRepository;
+    private final LanguageRepository languageRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public initDataBase(UserRepository userRepository, GroupRepository groupRepository, ScopeRepository scopeRepository, ScopeCleanRepository scopeCleanRepository, PasswordEncoder passwordEncoder) {
+    public initDataBase(UserRepository userRepository, GroupRepository groupRepository, ScopeRepository scopeRepository, ScopeCleanRepository scopeCleanRepository, LanguageRepository languageRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.scopeRepository = scopeRepository;
         this.scopeCleanRepository = scopeCleanRepository;
+        this.languageRepository = languageRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -53,20 +53,53 @@ public class initDataBase implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         initScopes();
+        initLanguages();
         initAdmin();
+
+    }
+
+    private void initLanguages() {
+
+        final List<LanguageEntity> all = languageRepository.findAll();
+
+        if(all.isEmpty()) {
+            final LanguageEnum[] languageValues = LanguageEnum.values();
+            for (LanguageEnum value : languageValues) {
+                LanguageEntity language = new LanguageEntity();
+                language.setLanguageEnum(value);
+                language.setActive(true);
+                if(value.getCode().equals("en")) {
+                    language.setDefault(true);
+                }
+                languageRepository.save(language);
+            }
+        }
+        else if(all.size() < LanguageEnum.values().length) {
+            for (LanguageEnum value : LanguageEnum.values()) {
+                for (LanguageEntity entity : all) {
+                    if(!Objects.equals(value, entity.getLanguageEnum())) {
+                        LanguageEntity language = new LanguageEntity();
+                        language.setLanguageEnum(value);
+                        language.setActive(true);
+                        languageRepository.save(language);
+                    }
+                }
+            }
+        }
+
 
     }
 
 
     protected void initAdmin() {
-
-//        Session session =
+        final List<LanguageEntity> allActiveLanguages = languageRepository.findAllByIsDefaultTrue();
 
         if(userRepository.findAll().isEmpty()) {
             final UserEntity admin = new UserEntity();
             admin.setName("Admin");
             admin.setPassword(passwordEncoder.encode("admin"));
             admin.setUsername("admin");
+            admin.setLanguage(allActiveLanguages.get(0));
             userRepository.save(admin);
         }
         final List<GroupEntity> all1 = groupRepository.findAll();

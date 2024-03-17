@@ -34,8 +34,8 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String locale = "en_EN";
+    @ManyToOne()
+    private LanguageEntity language;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<GroupEntity> groups = new HashSet<>();
