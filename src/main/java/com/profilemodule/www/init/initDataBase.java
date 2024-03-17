@@ -19,7 +19,8 @@ public class initDataBase implements CommandLineRunner {
 
     public static final List<String> scopes = List.of(
             UserEntity.SCOPE,
-            GroupEntity.SCOPE
+            GroupEntity.SCOPE,
+            LanguageEntity.SCOPE
     );
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
@@ -51,11 +52,9 @@ public class initDataBase implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-
         initScopes();
         initLanguages();
         initAdmin();
-
     }
 
     private void initLanguages() {
@@ -86,9 +85,8 @@ public class initDataBase implements CommandLineRunner {
                 }
             }
         }
-
-
     }
+
 
 
     protected void initAdmin() {
@@ -130,11 +128,5 @@ public class initDataBase implements CommandLineRunner {
             Hibernate.initialize(admin.getGroups());
             admin.getGroups().addAll(groups);
         }
-
-
-
-
-
-
     }
 }

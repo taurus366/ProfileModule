@@ -194,6 +194,10 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-login-flow</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-select-flow</artifactId>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
