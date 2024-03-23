@@ -1,15 +1,18 @@
 package com.profilemodule.www.view.Impl.user;
 
+import com.profilemodule.www.model.entity.BaseEntity;
 import com.profilemodule.www.model.entity.GroupEntity;
 import com.profilemodule.www.model.entity.UserEntity;
 import com.profilemodule.www.model.repository.GroupRepository;
 import com.profilemodule.www.model.repository.UserRepository;
+import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.internal.AllowInert;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -289,7 +292,7 @@ public class UserListViewImpl extends VerticalLayout {
         grid = new Grid<>(UserEntity.class);
         reloadGrid();
         UI.getCurrent().getPage().retrieveExtendedClientDetails(extendedClientDetails -> {
-            final Grid.Column<UserEntity> created = grid.getColumnByKey("created");
+            final Grid.Column<UserEntity> created = grid.getColumnByKey(BaseEntity.Fields.created);
             created.setRenderer(new TextRenderer<>(item -> {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT);
                 Instant instant = Instant.parse(item.getCreated().toString());
@@ -297,7 +300,7 @@ public class UserListViewImpl extends VerticalLayout {
                 return time.format(formatter);
             }));
 
-            final Grid.Column<UserEntity> modified = grid.getColumnByKey("modified");
+            final Grid.Column<UserEntity> modified = grid.getColumnByKey(BaseEntity.Fields.modified);
             modified.setRenderer(new TextRenderer<>(item -> {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT);
                 Instant instant = Instant.parse(item.getModified().toString());
@@ -306,16 +309,18 @@ public class UserListViewImpl extends VerticalLayout {
             }));
         });
 
-
-
-        final Grid.Column<UserEntity> password = grid.getColumnByKey("password");
+        final Grid.Column<UserEntity> password = grid.getColumnByKey(UserEntity.Fields.password);
         password.setVisible(false);
 
-        final Grid.Column<UserEntity> locale = grid.getColumnByKey("locale");
+        final Grid.Column<UserEntity> locale = grid.getColumnByKey(UserEntity.Fields.username);
         locale.setVisible(false);
 
-        final Grid.Column<UserEntity> groups = grid.getColumnByKey("groups");
+        final Grid.Column<UserEntity> groups = grid.getColumnByKey(UserEntity.Fields.groups);
         groups.setVisible(false);
+
+        final Grid.Column<UserEntity> language = grid.getColumnByKey(UserEntity.Fields.language);
+        language.setVisible(false);
+
         return grid;
     }
 

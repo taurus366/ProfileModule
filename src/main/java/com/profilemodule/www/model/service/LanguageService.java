@@ -11,5 +11,6 @@ public interface LanguageService {
 
     LanguageEntity save(LanguageEntity entity);
     List<LanguageEntity> findLanguagesByDefaultStatusTrue();
+    List<LanguageEntity> getAllByActive();
 
 }

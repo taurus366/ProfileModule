@@ -1,11 +1,14 @@
 package com.profilemodule.www.model.entity;
 
 import com.profilemodule.www.model.enums.PermissionEnum;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.*;
 
@@ -13,6 +16,7 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldNameConstants
 @Entity
 @Table(name = "groups")
 public class GroupEntity extends BaseEntity {
@@ -24,6 +28,7 @@ public class GroupEntity extends BaseEntity {
     public static final String ADD_ROLE = SCOPE + "_ADD";
     public static final String TITLE = "Group list";
     public static final String VIEW_ROUTE = "group_list";
+    public static final VaadinIcon icon = VaadinIcon.GROUP;
 
     @Column(nullable = false)
     private String name;

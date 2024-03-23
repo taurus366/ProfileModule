@@ -12,4 +12,6 @@ public interface LanguageRepository extends JpaRepository<LanguageEntity, Long> 
 
     @Query("SELECT lang from LanguageEntity lang WHERE lang.isDefault = true")
     List<LanguageEntity> findAllByIsDefaultTrue();
+
+    List<LanguageEntity> findAllByActiveIsTrue();
 }

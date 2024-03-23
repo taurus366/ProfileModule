@@ -1,10 +1,13 @@
 package com.profilemodule.www.model.entity;
 
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@FieldNameConstants
 @Table(name = "users")
 public class UserEntity extends BaseEntity {
     public static final String SCOPE = "USER_LIST";
@@ -24,6 +28,7 @@ public class UserEntity extends BaseEntity {
     public static final String ADD_ROLE = SCOPE + "_ADD";
     public static final String TITLE = "User list";
     public static final String VIEW_ROUTE = "user_list";
+    public static final VaadinIcon icon = VaadinIcon.USERS;
 
     @Column(nullable = false)
     private String username;

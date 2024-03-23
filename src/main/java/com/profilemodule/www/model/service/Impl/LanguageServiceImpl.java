@@ -35,4 +35,9 @@ public class LanguageServiceImpl implements LanguageService {
     public List<LanguageEntity> findLanguagesByDefaultStatusTrue() {
         return languageRepository.findAllByIsDefaultTrue();
     }
+
+    @Override
+    public List<LanguageEntity> getAllByActive() {
+        return languageRepository.findAllByActiveIsTrue();
+    }
 }
