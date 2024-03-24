@@ -2,11 +2,10 @@ package com.profilemodule.www.shared.i18n;
 
 import com.profilemodule.www.config.security.AuthenticatedUser;
 import com.profilemodule.www.model.entity.LanguageEntity;
-import com.profilemodule.www.model.entity.UserEntity;
-import com.profilemodule.www.model.enums.LanguageEnum;
 import com.profilemodule.www.model.service.LanguageService;
-import com.profilemodule.www.model.service.UserService;
 import com.vaadin.flow.i18n.I18NProvider;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.WrappedSession;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
@@ -74,46 +73,28 @@ public class CustomI18nProvider implements I18NProvider {
         return allByActive;
     }
 
-//    public static String getTranslationStatic(UserService userService, LanguageService languageService, String key, Locale locale, Object... params) {
-//
-//        if( key == null) {
-//            LoggerFactory.getLogger(CustomI18nProvider.class.getName())
-//                    .warn("Got language request for key with null value!");
-//            return "";
-//        }
-//
-//        final ResourceBundle bundle = ResourceBundle.getBundle(LOCATION_PREFIX, Locale.forLanguageTag(locale.toString().split("_")[0]));
-//
-//        String value;
-//        try {
-//            value = bundle.getString(key);
-//        } catch (final MissingResourceException e) {
-//            LoggerFactory.getLogger(CustomI18nProvider.class.getName())
-//                    .warn("Missing resource", e);
-//            return "!" + locale.getLanguage() + ": " + key;
-//        }
-//        if (params.length > 0) {
-//            value = MessageFormat.format(value, params);
-//        }
-//        return value;
-//
-//    }
+    public static AuthenticatedUser user;
+    public static String getTranslationStatic(String key) {
 
-    public static String locale;
-    public static String getTranslationStatic(String key, LanguageService languageService, AuthenticatedUser user) {
-
-
-        if( key == null) {
+        if(key == null) {
             LoggerFactory.getLogger(CustomI18nProvider.class.getName())
                     .warn("Got language request for key with null value!");
             return "";
         }
 
-        user.get().ifPresent(entity -> {
-            final LanguageEnum languageEnum = entity.getLanguage().getLanguageEnum();
-            locale = languageEnum.getCode();
-        });
-        final ResourceBundle bundle = ResourceBundle.getBundle(LOCATION_PREFIX, Locale.forLanguageTag(locale));
+        final WrappedSession session = VaadinSession.getCurrent().getSession();
+        AtomicReference<String> sessionLocale = new AtomicReference<>((String) session.getAttribute("locale"));
+
+        if(sessionLocale.get() == null || sessionLocale.get().isEmpty()) {
+            user.get()
+                    .ifPresent(entity -> {
+                       sessionLocale.set(entity.getLanguage().getLanguageEnum().getLocale());
+                        session.setAttribute("locale", sessionLocale.get());
+                    });
+        }
+
+
+        final ResourceBundle bundle = ResourceBundle.getBundle(LOCATION_PREFIX, Locale.forLanguageTag(sessionLocale.get().split("_")[0]));
 
 
         String value;
@@ -122,7 +103,7 @@ public class CustomI18nProvider implements I18NProvider {
         } catch (final MissingResourceException e) {
             LoggerFactory.getLogger(CustomI18nProvider.class.getName())
                     .warn("Missing resource", e);
-            return "!" + locale + ": " + key;
+            return "!" + sessionLocale + ": " + key;
         }
         return value;
     }

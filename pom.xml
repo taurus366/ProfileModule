@@ -43,6 +43,14 @@
 <!--        </dependency>-->
 
         <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>5.0.0</version> <!-- Or the version compatible with your servlet container -->
+            <scope>provided</scope> <!-- Or the appropriate scope for your project -->
+        </dependency>
+
+
+        <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>6.2.2.Final</version>
