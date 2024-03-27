@@ -5,14 +5,16 @@ import com.profilemodule.www.model.entity.GroupEntity;
 import com.profilemodule.www.model.entity.UserEntity;
 import com.profilemodule.www.model.repository.GroupRepository;
 import com.profilemodule.www.model.repository.UserRepository;
-import com.vaadin.flow.component.ClientCallable;
+import com.profilemodule.www.shared.wsupdater.Impl.WsUserList;
+import com.profilemodule.www.shared.wsupdater.UIPair;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.DetachEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.internal.AllowInert;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -53,6 +55,7 @@ public class UserListViewImpl extends VerticalLayout {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final GroupRepository groupRepository;
+    private static final WsUserList ws = new WsUserList();
 
 
     public UserListViewImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, GroupRepository groupRepository) {
@@ -61,6 +64,15 @@ public class UserListViewImpl extends VerticalLayout {
         this.groupRepository = groupRepository;
     }
 
+    public void setAttach(AttachEvent attachEvent) {
+        final UI ui = UI.getCurrent();
+        ws.add(ui, UserEntity.SCOPE, grid);
+    }
+
+    public void setDettach(DetachEvent dettachEvent) {
+        final UI ui = UI.getCurrent();
+        ws.removeByUI(ui);
+    }
 
     public VerticalLayout initUI() {
         VerticalLayout verticalLayout = new VerticalLayout();
@@ -81,6 +93,7 @@ public class UserListViewImpl extends VerticalLayout {
     private List<Button> initBtns() {
         Button createNewItemBtn = new Button(VaadinIcon.PLUS.create(), event -> createNewItemDialog().open());
         Button refreshBtn = new Button(VaadinIcon.ROTATE_LEFT.create(), event -> reloadGrid());
+        refreshBtn.setId("refreshButton");
 
         return List.of(createNewItemBtn, refreshBtn);
     }
@@ -122,7 +135,8 @@ public class UserListViewImpl extends VerticalLayout {
                 dialog.close();
                 Notification.show(ADDED_USER_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                reloadGrid();
+//                reloadGrid();
+                broadCastToEveryone();
             }
         });
 
@@ -170,7 +184,8 @@ public class UserListViewImpl extends VerticalLayout {
                 cancelBtn.click();
                 Notification.show(UPDATED_USER_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                reloadGrid();
+//                reloadGrid();
+                broadCastToEveryone();
             }
         });
 
@@ -324,13 +339,53 @@ public class UserListViewImpl extends VerticalLayout {
         return grid;
     }
 
+
     private void reloadGrid() {
         final List<UserEntity> all = userRepository.findAll();
         for (UserEntity userEntity : all) {
             Hibernate.initialize(userEntity.getGroups());
         }
-        grid.setItems(all);
+
+        try {
+            final UIPair byUI = ws.getByUI(UI.getCurrent(), UserEntity.SCOPE);
+            byUI.getUi().access(() -> {
+                if( byUI.getItem() instanceof Grid<?>) {
+
+               Grid<UserEntity> grid = (Grid<UserEntity>) byUI.getItem();
+                    grid.setItems(all);
+                }
+            });
+        } catch (Exception e) {
+            grid.setItems(all);
+        }
+
+
+
+    };
+
+    private void broadCastToEveryone() {
+        ws.getByName(UserEntity.SCOPE).forEach(uiPair -> {
+
+            UI ui = uiPair.getUi();
+
+            if(uiPair.getItem() instanceof Grid<?>) {
+                Grid<UserEntity> grid = (Grid<UserEntity>) uiPair.getItem();
+                ui.access(() -> {
+                    final List<UserEntity> all = userRepository.findAll();
+                    for (UserEntity userEntity : all) {
+                        Hibernate.initialize(userEntity.getGroups());
+                    }
+                    grid.setItems(all);
+                });
+            }
+        });
     }
 
 
+
+
+
+
 }
+
+

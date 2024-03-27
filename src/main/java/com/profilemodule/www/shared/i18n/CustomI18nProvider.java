@@ -3,6 +3,11 @@ package com.profilemodule.www.shared.i18n;
 import com.profilemodule.www.config.security.AuthenticatedUser;
 import com.profilemodule.www.model.entity.LanguageEntity;
 import com.profilemodule.www.model.service.LanguageService;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.i18n.I18NProvider;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WrappedSession;
@@ -73,6 +78,8 @@ public class CustomI18nProvider implements I18NProvider {
         return allByActive;
     }
 
+
+    /// WORKS
     public static AuthenticatedUser user;
     public static String getTranslationStatic(String key) {
 
@@ -107,4 +114,6 @@ public class CustomI18nProvider implements I18NProvider {
         }
         return value;
     }
+
+    /// WORKS
 }

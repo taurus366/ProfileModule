@@ -39,7 +39,7 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.EAGER)
     private LanguageEntity language;
 
     @ManyToMany(fetch = FetchType.EAGER)
