@@ -2,9 +2,11 @@ package com.profilemodule.www.view.Impl.user;
 
 import com.profilemodule.www.model.entity.BaseEntity;
 import com.profilemodule.www.model.entity.GroupEntity;
+import com.profilemodule.www.model.entity.LanguageEntity;
 import com.profilemodule.www.model.entity.UserEntity;
 import com.profilemodule.www.model.repository.GroupRepository;
 import com.profilemodule.www.model.repository.UserRepository;
+import com.profilemodule.www.model.service.LanguageService;
 import com.profilemodule.www.shared.wsupdater.Impl.WsUserList;
 import com.profilemodule.www.shared.wsupdater.UIPair;
 import com.vaadin.flow.component.AttachEvent;
@@ -55,13 +57,15 @@ public class UserListViewImpl extends VerticalLayout {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final GroupRepository groupRepository;
+    private final LanguageService languageService;
     private static final WsUserList ws = new WsUserList();
 
 
-    public UserListViewImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, GroupRepository groupRepository) {
+    public UserListViewImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, GroupRepository groupRepository, LanguageService languageService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.groupRepository = groupRepository;
+        this.languageService = languageService;
     }
 
     public void setAttach(AttachEvent attachEvent) {
@@ -131,7 +135,9 @@ public class UserListViewImpl extends VerticalLayout {
                user.setName(nameField.getValue());
                user.setUsername(usernameField.getValue());
                user.setPassword(passwordEncoder.encode(passwordField.getValue()));
-               userRepository.save(user);
+                final List<LanguageEntity> languagesByDefaultStatusTrue = languageService.findLanguagesByDefaultStatusTrue();
+                user.setLanguage(languagesByDefaultStatusTrue.get(0));
+                userRepository.save(user);
                 dialog.close();
                 Notification.show(ADDED_USER_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                         .addThemeVariants(NotificationVariant.LUMO_SUCCESS);

@@ -30,7 +30,7 @@ public class UserEntity extends BaseEntity {
     public static final String VIEW_ROUTE = "user_list";
     public static final VaadinIcon icon = VaadinIcon.USERS;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
@@ -38,6 +38,15 @@ public class UserEntity extends BaseEntity {
 
     @Column(nullable = false)
     private String password;
+
+    @Column
+    private String email;
+
+    @Column
+    private String phone;
+
+    @Column
+    private String profileImage;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private LanguageEntity language;
