@@ -7,6 +7,8 @@ import com.profilemodule.www.model.entity.UserEntity;
 import com.profilemodule.www.model.repository.GroupRepository;
 import com.profilemodule.www.model.repository.UserRepository;
 import com.profilemodule.www.model.service.LanguageService;
+import com.profilemodule.www.shared.i18n.CustomI18nProvider;
+import com.profilemodule.www.shared.i18n.Intl;
 import com.profilemodule.www.shared.wsupdater.Impl.WsUserList;
 import com.profilemodule.www.shared.wsupdater.UIPair;
 import com.vaadin.flow.component.AttachEvent;
@@ -16,12 +18,14 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.Authentication;
@@ -90,7 +94,6 @@ public class UserListViewImpl extends VerticalLayout {
         verticalLayout.add(userEntityGrid);
 
         userEntityGrid.addItemDoubleClickListener(event -> createUpdateItemDialog(event).open());
-
         return verticalLayout;
     }
 
@@ -328,6 +331,16 @@ public class UserListViewImpl extends VerticalLayout {
                 LocalDateTime time = LocalDateTime.ofInstant(instant, ZoneId.of(extendedClientDetails.getTimeZoneId()));
                 return time.format(formatter);
             }));
+
+            final Grid.Column<UserEntity> img = grid.getColumnByKey(UserEntity.Fields.profileImage);
+            img.setRenderer(new ComponentRenderer<>(item -> {
+                Image profileImg = new Image();
+                profileImg.setHeight("4rem");
+                profileImg.setWidth("4rem");
+                if(item.getProfileImage() != null) profileImg.setSrc(item.getProfileImage());
+                return profileImg;
+            }));
+
         });
 
         final Grid.Column<UserEntity> password = grid.getColumnByKey(UserEntity.Fields.password);
@@ -341,6 +354,25 @@ public class UserListViewImpl extends VerticalLayout {
 
         final Grid.Column<UserEntity> language = grid.getColumnByKey(UserEntity.Fields.language);
         language.setVisible(false);
+
+//        1. Created , Email, Id , Modified, name, phone, profile image
+        final Grid.Column<UserEntity> created = grid.getColumnByKey(BaseEntity.Fields.created);
+        created.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getCreated()));
+
+        final Grid.Column<UserEntity> email = grid.getColumnByKey(UserEntity.Fields.email);
+        email.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getEmail()));
+
+        final Grid.Column<UserEntity> modified = grid.getColumnByKey(BaseEntity.Fields.modified);
+        modified.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getModified()));
+
+        final Grid.Column<UserEntity> name = grid.getColumnByKey(UserEntity.Fields.name);
+        name.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getName()));
+
+        final Grid.Column<UserEntity> phone = grid.getColumnByKey(UserEntity.Fields.phone);
+        phone.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getPhone()));
+
+        final Grid.Column<UserEntity> profileImage = grid.getColumnByKey(UserEntity.Fields.profileImage);
+        profileImage.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getProfileImage()));
 
         return grid;
     }
