@@ -6,34 +6,29 @@ import com.profilemodule.www.model.entity.UserEntity;
 import com.profilemodule.www.model.service.LanguageService;
 import com.profilemodule.www.model.service.UserService;
 import com.profilemodule.www.shared.i18n.LanguageSelector;
-import com.vaadin.flow.component.UI;
+import com.profilemodule.www.shared.profileImg.ProfileImage;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 
 @Component
@@ -196,6 +191,8 @@ public class ProfileViewImpl extends VerticalLayout {
         });
     }
 
+    Image profileImage;
+
     private void userImage(VerticalLayout layout) {
       FlexLayout layout1 = new FlexLayout();
         layout1.setSizeFull();
@@ -203,55 +200,46 @@ public class ProfileViewImpl extends VerticalLayout {
         layout1.setJustifyContentMode(JustifyContentMode.CENTER);
         layout1.setAlignItems(Alignment.CENTER);
         layout1.setFlexWrap(FlexLayout.FlexWrap.WRAP);
-
-        Image profileImage = new Image();
-        profileImage.setWidth("8rem");
-        profileImage.setHeight("8rem");
-        final Optional<UserEntity> userEntity1 = authenticatedUser.get();
-        userEntity1.ifPresent(entity -> {
-            if(entity.getProfileImage() != null) profileImage.setSrc(entity.getProfileImage());
+        authenticatedUser.get().ifPresent(entity -> {
+            profileImage = new Image();
+            profileImage.setSrc(ProfileImage.getImgStream(entity));
+            profileImage.setWidth("8rem");
+            profileImage.setHeight("8rem");
         });
 
 
-        MemoryBuffer buffer = new MemoryBuffer();
-        Upload upload = new Upload(buffer);
+        MultiFileMemoryBuffer buffer1 = new MultiFileMemoryBuffer();
+
+        Upload upload = new Upload(buffer1);
         upload.setMaxFiles(1);
         int maxFileSizeInBytes = 10 * 1024 * 1024; // 10MB
         upload.setMaxFileSize(maxFileSizeInBytes);
-        upload.setAcceptedFileTypes(".png", ".jpg", ".jpeg");
+        upload.setAcceptedFileTypes("image/jpeg","image/jpg", "image/png", "image/gif");
         upload.addSucceededListener(event -> {
-            String fileName = event.getFileName();
-            InputStream inputStream = buffer.getInputStream();
 
-            try {
-                // save to path
-                String uploadDirectory = "MainModule/src/main/resources/META-INF/resources/media/images/"+userId+"/";
-                Path directoryPath = Path.of(uploadDirectory);
+                    String attacFileName = event.getFileName();
 
-                if(!Files.exists(directoryPath)) Files.createDirectories(directoryPath);
+                    try {
+                        // The image can be jpg png or gif, but we store it always as png file in this example
+                        BufferedImage inputImage = ImageIO.read(buffer1.getInputStream(attacFileName));
+                        ByteArrayOutputStream pngContent = new ByteArrayOutputStream();
+                        ImageIO.write(inputImage, "png", pngContent);
 
-                Path filePath = directoryPath.resolve(fileName);
-                Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-
-
-                inputStream.close();
-
-                final Optional<UserEntity> userEntity = authenticatedUser.get();
-                final String uri = "/media/images/"+userId+"/"+fileName;
-                userEntity.ifPresent(entity -> {
-                    entity.setProfileImage(uri);
+                        final Optional<UserEntity> userEntity = authenticatedUser.get();
+                        userEntity.ifPresent(entity -> {
+                    entity.setImg(pngContent.toByteArray());
                     userService.update(entity);
                     Notification.show(UPLOADED_PICTURE_MESSAGE, NOTIFY_DURATION, NOTIFY_POSITION)
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                });
-//               /media/images/1/anonymous-mask-icon-22.jpg
+                            profileImage.setSrc(ProfileImage.getImgStream(entity));
+                            profileImage.setWidth("8rem");
+                            profileImage.setHeight("8rem");
 
-                profileImage.setSrc(uri);
+                        });
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+                    } catch (IOException e) {
+                            e.printStackTrace();
+                    }
 
         });
         upload.addFileRejectedListener(event1 -> {
@@ -260,7 +248,6 @@ public class ProfileViewImpl extends VerticalLayout {
         });
         upload.setDropLabel(new Span("jpeg, png, jpg"));
         upload.setUploadButton(new Button("Upload Picture"));
-//        MainModule/src/main/resources/META-INF/resources/media/images
 
         layout1.add(profileImage, upload);
 
@@ -269,6 +256,5 @@ public class ProfileViewImpl extends VerticalLayout {
 
 
     }
-
 
 }

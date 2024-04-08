@@ -9,6 +9,7 @@ import com.profilemodule.www.model.repository.UserRepository;
 import com.profilemodule.www.model.service.LanguageService;
 import com.profilemodule.www.shared.i18n.CustomI18nProvider;
 import com.profilemodule.www.shared.i18n.Intl;
+import com.profilemodule.www.shared.profileImg.ProfileImage;
 import com.profilemodule.www.shared.wsupdater.Impl.WsUserList;
 import com.profilemodule.www.shared.wsupdater.UIPair;
 import com.vaadin.flow.component.AttachEvent;
@@ -332,12 +333,13 @@ public class UserListViewImpl extends VerticalLayout {
                 return time.format(formatter);
             }));
 
-            final Grid.Column<UserEntity> img = grid.getColumnByKey(UserEntity.Fields.profileImage);
+            final Grid.Column<UserEntity> img = grid.getColumnByKey(UserEntity.Fields.img);
             img.setRenderer(new ComponentRenderer<>(item -> {
                 Image profileImg = new Image();
                 profileImg.setHeight("4rem");
                 profileImg.setWidth("4rem");
-                if(item.getProfileImage() != null) profileImg.setSrc(item.getProfileImage());
+                if(item.getImg() != null) profileImg.setSrc(ProfileImage.getImgStream(item));
+//                if(item.getProfileImage() != null) profileImg.setSrc(item.getProfileImage());
                 return profileImg;
             }));
 
@@ -371,7 +373,7 @@ public class UserListViewImpl extends VerticalLayout {
         final Grid.Column<UserEntity> phone = grid.getColumnByKey(UserEntity.Fields.phone);
         phone.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getPhone()));
 
-        final Grid.Column<UserEntity> profileImage = grid.getColumnByKey(UserEntity.Fields.profileImage);
+        final Grid.Column<UserEntity> profileImage = grid.getColumnByKey(UserEntity.Fields.img);
         profileImage.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getProfileImage()));
 
         return grid;

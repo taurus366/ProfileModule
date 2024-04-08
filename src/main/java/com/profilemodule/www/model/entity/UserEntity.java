@@ -45,8 +45,12 @@ public class UserEntity extends BaseEntity {
     @Column
     private String phone;
 
-    @Column
-    private String profileImage;
+//    @Column
+//    private String profileImage;
+
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+    private byte[] img;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private LanguageEntity language;
