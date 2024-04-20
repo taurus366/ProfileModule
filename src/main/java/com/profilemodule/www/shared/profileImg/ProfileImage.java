@@ -13,6 +13,12 @@ public class ProfileImage {
         return sr;
     }
 
+    public static StreamResource getImgStreamSrc(byte[] src) {
+        StreamResource sr = new StreamResource("user", () -> new ByteArrayInputStream(src));
+        sr.setContentType("image/png");
+        return sr;
+    }
+
 
 //    UPLOAD
 //       MultiFileMemoryBuffer buffer1 = new MultiFileMemoryBuffer();
