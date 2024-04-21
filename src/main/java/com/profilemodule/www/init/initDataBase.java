@@ -1,19 +1,23 @@
 package com.profilemodule.www.init;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.profilemodule.www.model.dto.CountryDTO;
 import com.profilemodule.www.model.entity.*;
 import com.profilemodule.www.model.enums.LanguageEnum;
 import com.profilemodule.www.model.enums.PermissionEnum;
 import com.profilemodule.www.model.repository.*;
 import org.hibernate.Hibernate;
-import org.hibernate.Session;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
+
 @Component
 public class initDataBase implements CommandLineRunner {
 
@@ -28,25 +32,9 @@ public class initDataBase implements CommandLineRunner {
     private final ScopeCleanRepository scopeCleanRepository;
     private final LanguageRepository languageRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CountryRepository countryRepository;
 
-    public initDataBase(UserRepository userRepository, GroupRepository groupRepository, ScopeRepository scopeRepository, ScopeCleanRepository scopeCleanRepository, LanguageRepository languageRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.groupRepository = groupRepository;
-        this.scopeRepository = scopeRepository;
-        this.scopeCleanRepository = scopeCleanRepository;
-        this.languageRepository = languageRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
-    protected void initScopes() {
-        final List<ScopeCleanEntity> allScopes = scopeCleanRepository.findAll();
-        scopes.forEach(s -> {
-            final Set<String> collect = allScopes.stream().map(ScopeCleanEntity::getName).collect(Collectors.toSet());
-                if(!collect.contains(s)){
-                    scopeCleanRepository.save(new ScopeCleanEntity(s));
-                }
-        });
-    }
 
 
     @Override
@@ -55,6 +43,27 @@ public class initDataBase implements CommandLineRunner {
         initScopes();
         initLanguages();
         initAdmin();
+        initCountry();
+    }
+
+    public initDataBase(UserRepository userRepository, GroupRepository groupRepository, ScopeRepository scopeRepository, ScopeCleanRepository scopeCleanRepository, LanguageRepository languageRepository, PasswordEncoder passwordEncoder, CountryRepository countryRepository) {
+        this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
+        this.scopeRepository = scopeRepository;
+        this.scopeCleanRepository = scopeCleanRepository;
+        this.languageRepository = languageRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.countryRepository = countryRepository;
+    }
+
+    protected void initScopes() {
+        final List<ScopeCleanEntity> allScopes = scopeCleanRepository.findAll();
+        scopes.forEach(s -> {
+            final Set<String> collect = allScopes.stream().map(ScopeCleanEntity::getName).collect(Collectors.toSet());
+            if(!collect.contains(s)){
+                scopeCleanRepository.save(new ScopeCleanEntity(s));
+            }
+        });
     }
 
     private void initLanguages() {
@@ -128,5 +137,42 @@ public class initDataBase implements CommandLineRunner {
             Hibernate.initialize(admin.getGroups());
             admin.getGroups().addAll(groups);
         }
+    }
+
+    private void initCountry() throws IOException {
+        File file = ResourceUtils.getFile("classpath:json/country.json");
+        ObjectMapper mapper = new ObjectMapper();
+
+
+        final List<CountryEntity> allCountry = countryRepository.findAll();
+        if(allCountry.isEmpty()) {
+            try {
+                // Read JSON file and map it to a list of Country objects
+                CountryDTO[] countries = mapper.readValue(file, CountryDTO[].class);
+
+                final List<LanguageEntity> allLanguages = languageRepository.findAll();
+
+                // Now you have a list of Country objects
+                for (CountryDTO country : countries) {
+
+                    Map<Integer, String> name = new HashMap<>();
+                    for (LanguageEntity language : allLanguages) {
+                        name.put(language.getId().intValue(), country.getName().toUpperCase());
+                    }
+
+                    final CountryEntity build = CountryEntity
+                            .builder()
+                            .code(country.getCountryCode().toLowerCase())
+                            .name(name)
+                            .build();
+                    countryRepository.save(build);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
     }
 }

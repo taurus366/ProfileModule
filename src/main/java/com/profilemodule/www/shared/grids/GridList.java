@@ -97,7 +97,8 @@ public class GridList {
     }
 
     private static List<Button> initBtns() {
-        Button createNewItemBtn = new Button(VaadinIcon.PLUS.create(), event -> createNewItemDialog().open());
+//        Button createNewItemBtn = new Button(VaadinIcon.PLUS.create(), event -> createNewItemDialog().open());
+        Button createNewItemBtn = new Button(VaadinIcon.PLUS.create());
 //        Button refreshBtn = new Button(VaadinIcon.ROTATE_LEFT.create(), event -> reloadGrid());
         Button refreshBtn = new Button(VaadinIcon.ROTATE_LEFT.create());
 
