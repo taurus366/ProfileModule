@@ -110,7 +110,8 @@ public class CustomI18nProvider implements I18NProvider {
         } catch (final MissingResourceException e) {
             LoggerFactory.getLogger(CustomI18nProvider.class.getName())
                     .warn("Missing resource", e);
-            return "!" + sessionLocale + ": " + key;
+//            return "!" + sessionLocale + ": " + key;
+            return key;
         }
         return value;
     }

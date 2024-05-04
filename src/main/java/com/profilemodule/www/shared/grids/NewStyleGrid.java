@@ -18,11 +18,11 @@ import java.util.List;
 public class NewStyleGrid {
 
 
-    public static NewStyleGridDto initGrid(String... widthAndHeight) {
+    public static NewStyleGridDto initGrid(String stringTitle, String... widthAndHeight) {
 
         Dialog dialog = initDialog(widthAndHeight);
         TabSheet tabSheet = initTabsheet();
-        H3 title = initTitle();
+        H3 title = initTitle(stringTitle);
 
 
         final List<Icon> fullAndClose = initFullAndClose(dialog, widthAndHeight);
@@ -132,14 +132,14 @@ public class NewStyleGrid {
         UI.getCurrent().getPage().executeJs("document.querySelector('vaadin-dialog-overlay').shadowRoot.querySelector('[part=\"overlay\"]').removeAttribute('style');");
     }
 
-    private static H3 initTitle() {
-        H3 title = new H3();
-        title.getStyle()
+    private static H3 initTitle(String title) {
+        H3 titleInit = new H3(title);
+        titleInit.getStyle()
                 .set("width", "100%")
                 .set("position", "absolute")
                 .set("text-align", "center");
 
-        return title;
+        return titleInit;
     }
 
     private static List<Button> initBtns(Dialog dialog) {
