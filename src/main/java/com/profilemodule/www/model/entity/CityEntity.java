@@ -3,6 +3,7 @@ package com.profilemodule.www.model.entity;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldNameConstants
 @Entity
 @Builder
 @Table(name = "country_city")
@@ -25,8 +27,11 @@ public class CityEntity extends BaseEntity {
     public static final String VIEW_ROUTE = "city_list";
     public static final VaadinIcon icon = VaadinIcon.USERS;
 
-    @ManyToOne
-    private CountryEntity country;
+//    @ManyToOne()
+//    private CountryEntity country;
+
+    @Column()
+    private Long countryId;
 
     @Column
     @ElementCollection(fetch = FetchType.EAGER)

@@ -5,6 +5,8 @@ import com.profilemodule.www.model.entity.LanguageEntity;
 import com.profilemodule.www.model.entity.UserEntity;
 import com.profilemodule.www.model.service.LanguageService;
 import com.profilemodule.www.model.service.UserService;
+import com.profilemodule.www.shared.i18n.CustomI18nProvider;
+import com.profilemodule.www.shared.i18n.Intl;
 import com.profilemodule.www.shared.i18n.LanguageSelector;
 import com.profilemodule.www.shared.profileImg.ProfileImage;
 import com.vaadin.flow.component.button.Button;
@@ -22,8 +24,9 @@ import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
+import com.vaadin.flow.router.HasDynamicTitle;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -31,8 +34,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Optional;
 
-@Component
-public class ProfileViewImpl extends VerticalLayout {
+//@Component
+@PermitAll
+public class ProfileView extends VerticalLayout implements HasDynamicTitle {
 
     public final String UPDATED_USER_MESSAGE = "Successfully updated User";
     public final String UPLOADED_PICTURE_MESSAGE = "Successfully upload Picture";
@@ -47,12 +51,13 @@ public class ProfileViewImpl extends VerticalLayout {
     private final UserService userService;
     private final AuthenticatedUser user;
     private final PasswordEncoder passwordEncoder;
-    public ProfileViewImpl(AuthenticatedUser authenticatedUser, LanguageService languageService, UserService userService, AuthenticatedUser user, PasswordEncoder passwordEncoder) {
+    public ProfileView(AuthenticatedUser authenticatedUser, LanguageService languageService, UserService userService, AuthenticatedUser user, PasswordEncoder passwordEncoder) {
         this.authenticatedUser = authenticatedUser;
         this.languageService = languageService;
         this.userService = userService;
         this.user = user;
         this.passwordEncoder = passwordEncoder;
+        add(initUI());
     }
     private Long userId;
 
@@ -257,4 +262,9 @@ public class ProfileViewImpl extends VerticalLayout {
 
     }
 
+    @Override
+    public String getPageTitle() {
+        final String title = CustomI18nProvider.getTranslationStatic(Intl.getProfile());
+        return title;
+    }
 }

@@ -3,17 +3,15 @@ package com.profilemodule.www.view.Impl.group;
 import com.profilemodule.www.model.entity.GroupEntity;
 import com.profilemodule.www.model.entity.ScopeCleanEntity;
 import com.profilemodule.www.model.entity.ScopeEntity;
-import com.profilemodule.www.model.entity.UserEntity;
 import com.profilemodule.www.model.enums.PermissionEnum;
 import com.profilemodule.www.model.service.GroupService;
 import com.profilemodule.www.model.service.ScopeCleanService;
 import com.profilemodule.www.model.service.ScopeService;
+import com.profilemodule.www.shared.i18n.CustomI18nProvider;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
-import com.vaadin.flow.component.accordion.AccordionPanel;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.ItemDoubleClickEvent;
@@ -23,33 +21,25 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.TextRenderer;
-import org.hibernate.Hibernate;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
+import com.vaadin.flow.router.HasDynamicTitle;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
-@Component
+//@Component
+
 @Transactional
-public class GroupListViewImpl extends VerticalLayout {
+@RolesAllowed({GroupEntity.VIEW_ROLE})
+public class GroupListView extends VerticalLayout implements HasDynamicTitle {
 
     public final String ADDED_GROUP_MESSAGE = "Successfully created new Group";
     public final String UPDATED_GROUP_MESSAGE = "Successfully updated Group";
@@ -66,10 +56,11 @@ public class GroupListViewImpl extends VerticalLayout {
 
     private Grid<GroupEntity> grid;
 
-    public GroupListViewImpl(GroupService groupService, ScopeCleanService scopeCleanService, ScopeService scopeService) {
+    public GroupListView(GroupService groupService, ScopeCleanService scopeCleanService, ScopeService scopeService) {
         this.groupService = groupService;
         this.scopeCleanService = scopeCleanService;
         this.scopeService = scopeService;
+        add(initUI());
     }
 
     public VerticalLayout initUI() {
@@ -317,5 +308,10 @@ public class GroupListViewImpl extends VerticalLayout {
         final List<GroupEntity> all = groupService.getAll();
 
         grid.setItems(all);
+    }
+
+    @Override
+    public String getPageTitle() {
+        return CustomI18nProvider.getTranslationStatic(GroupEntity.TITLE);
     }
 }

@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface CityService {
 
     Optional<CityEntity> get(Long id);
+    CityEntity get2(Long id);
     List<CityEntity> getAll();
     CityEntity save(CityEntity entity);
+    List<Long> searchByNameAndLangId(Long langId, String name);
 }

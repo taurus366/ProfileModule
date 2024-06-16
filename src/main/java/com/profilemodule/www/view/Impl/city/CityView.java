@@ -2,7 +2,6 @@ package com.profilemodule.www.view.Impl.city;
 
 import com.profilemodule.www.model.entity.CityEntity;
 import com.profilemodule.www.model.entity.CountryEntity;
-import com.profilemodule.www.model.repository.CountryRepository;
 import com.profilemodule.www.model.service.CityService;
 import com.profilemodule.www.model.service.CountryService;
 import com.profilemodule.www.model.service.LanguageService;
@@ -13,43 +12,34 @@ import com.profilemodule.www.shared.model.dto.MultiLanguageTextFieldDTO;
 import com.profilemodule.www.shared.model.dto.NewStyleGridDto;
 import com.profilemodule.www.shared.multiLanguageFields.MultiLanguageTextField;
 import com.profilemodule.www.shared.select.ComboBoxSelect;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class CityViewImpl extends VerticalLayout {
+public class CityView extends VerticalLayout {
 
     private final CityService cityService;
     private final CountryService countryService;
     private final LanguageService languageService;
-    private final CountryRepository countryRepository;
 
-    public CityViewImpl(CityService cityService, CountryService countryService, LanguageService languageService, CountryRepository countryRepository) {
+    public CityView(CityService cityService, CountryService countryService, LanguageService languageService) {
         this.cityService = cityService;
         this.countryService = countryService;
         this.languageService = languageService;
-        this.countryRepository = countryRepository;
     }
 
 
     public Dialog initUI(Long id) {
         final Optional<CityEntity> cityEntity = cityService.get(id);
-
-
-
-
-
 
         final String title = String.format("%s #%d", CustomI18nProvider.getTranslationStatic(Intl.getCity()), id);
         final NewStyleGridDto newStyleGridDto = NewStyleGrid.initGrid(title);
@@ -62,15 +52,28 @@ public class CityViewImpl extends VerticalLayout {
 
         ComboBox<CountryEntity> countryEntityComboBox = initCountryComboBox();
 //        countryEntityComboBox.setRenderer(new TextRenderer<>(item -> String.format("%s", item.getName())));
-        countryEntityComboBox.setLabel(Intl.getCountry());
-        cityEntity.ifPresent(entity -> countryEntityComboBox.setValue(entity.getCountry()));
+        countryEntityComboBox.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getCountry()));
+//        cityEntity.ifPresent(entity -> countryEntityComboBox.setValue(entity.getCountry()));
+        cityEntity.ifPresent(entity -> {
+           final Optional<CountryEntity> country = countryService.get(entity.getCountryId());
+           country.ifPresent(countryEntityComboBox::setValue);
+        });
 
         Tab mainTab = new Tab(CustomI18nProvider.getTranslationStatic(Intl.getMain()));
         VerticalLayout mainLayout = new VerticalLayout();
 
         mainLayout.add(countryEntityComboBox, multiLanguageTextFieldDTO.getHorizontalLayout());
 
+
         tabSheet.add(mainTab, mainLayout);
+
+
+        // Save / Save and Close
+        final Button save = newStyleGridDto.getSave();
+        final Button saveAndClose = newStyleGridDto.getSaveAndClose();
+
+        save.addClickListener(event -> saveEntity(id, countryEntityComboBox.getValue().getId(), multiLanguageTextFieldDTO.getData(), cityEntity.orElseGet(CityEntity::new)));
+        saveAndClose.addClickListener(event -> saveEntity(id, countryEntityComboBox.getValue().getId(), multiLanguageTextFieldDTO.getData(), cityEntity.orElseGet(CityEntity::new)));
 
 
         return newStyleGridDto.getDialog();
@@ -107,5 +110,27 @@ public class CityViewImpl extends VerticalLayout {
 //
 //        return countryEntityComboBox;
         return ComboBoxSelect.countryEntityComboBox(countryService);
+    }
+
+    private void saveEntity(Long id, Long countryId, Map<Integer, String> data, CityEntity entity) {
+        Map<Integer, String> newData = new HashMap<>();
+        for (Map.Entry<Integer, String> entry : data.entrySet()) {
+            newData.put(entry.getKey(), entry.getValue().toUpperCase());
+        }
+        data = newData;
+
+       if(id > 0) {
+           entity.setCountryId(countryId);
+           entity.setName(data);
+
+       } else {
+           entity = CityEntity
+                   .builder()
+                   .name(data)
+                   .countryId(countryId)
+                   .build();
+       }
+
+       cityService.save(entity);
     }
 }

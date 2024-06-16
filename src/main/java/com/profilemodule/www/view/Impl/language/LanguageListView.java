@@ -2,6 +2,7 @@ package com.profilemodule.www.view.Impl.language;
 
 import com.profilemodule.www.model.entity.LanguageEntity;
 import com.profilemodule.www.model.service.LanguageService;
+import com.profilemodule.www.shared.i18n.CustomI18nProvider;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -16,7 +17,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.TextRenderer;
-import org.springframework.stereotype.Component;
+import com.vaadin.flow.router.HasDynamicTitle;
+import jakarta.annotation.security.RolesAllowed;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -24,8 +26,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@Component
-public class LanguageListViewImpl extends VerticalLayout {
+//@Component
+@RolesAllowed({LanguageEntity.VIEW_ROLE})
+public class LanguageListView extends VerticalLayout implements HasDynamicTitle {
 
     public final String UPDATED_LANGUAGE_MESSAGE = "Successfully updated Language";
     public final int NOTIFY_DURATION = 5000;
@@ -35,8 +38,9 @@ public class LanguageListViewImpl extends VerticalLayout {
     private final LanguageService languageService;
     private Grid<LanguageEntity> grid;
 
-    public LanguageListViewImpl(LanguageService languageService) {
+    public LanguageListView(LanguageService languageService) {
         this.languageService = languageService;
+        add(initUI());
     }
 
     public VerticalLayout initUI() {
@@ -153,5 +157,10 @@ public class LanguageListViewImpl extends VerticalLayout {
         final List<LanguageEntity> all = languageService.getAll();
 
         grid.setItems(all);
+    }
+
+    @Override
+    public String getPageTitle() {
+        return CustomI18nProvider.getTranslationStatic(LanguageEntity.TITLE);
     }
 }

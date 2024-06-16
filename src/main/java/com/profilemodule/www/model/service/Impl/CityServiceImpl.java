@@ -21,6 +21,10 @@ public class CityServiceImpl implements CityService {
     public Optional<CityEntity> get(Long id) {
         return cityRepository.findById(id);
     }
+    @Override
+    public CityEntity get2(Long id) {
+        return cityRepository.getReferenceById(id);
+    }
 
     @Override
     public List<CityEntity> getAll() {
@@ -30,5 +34,10 @@ public class CityServiceImpl implements CityService {
     @Override
     public CityEntity save(CityEntity entity) {
         return cityRepository.save(entity);
+    }
+
+    @Override
+    public List<Long> searchByNameAndLangId(Long langId, String name) {
+        return cityRepository.findIdsByNameKeyAndNameLike(langId.intValue(), name);
     }
 }

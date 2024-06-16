@@ -23,7 +23,7 @@ public class CountryEntity extends BaseEntity {
     @Column
     private String code;
 
-    @OneToMany(mappedBy = "country")
-    private List<CityEntity> city = new ArrayList<>();
+//    @OneToMany(mappedBy = "country")
+//    private List<CityEntity> city = new ArrayList<>();
 
 }

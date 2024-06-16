@@ -8,6 +8,8 @@ import java.io.ByteArrayInputStream;
 public class ProfileImage {
 
     public static StreamResource getImgStream(UserEntity entity) {
+        if(entity.getImg() == null) return null;
+
             StreamResource sr = new StreamResource("user", () -> new ByteArrayInputStream(entity.getImg()));
             sr.setContentType("image/png");
         return sr;

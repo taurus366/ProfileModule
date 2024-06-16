@@ -157,7 +157,8 @@ public class initDataBase implements CommandLineRunner {
 
                     Map<Integer, String> name = new HashMap<>();
                     for (LanguageEntity language : allLanguages) {
-                        name.put(language.getId().intValue(), country.getName().toUpperCase());
+//                        name.put(language.getId().intValue(), country.getName().toUpperCase());
+                        name.put(language.getLanguageEnum().ordinal(), country.getName().toUpperCase());
                     }
 
                     final CountryEntity build = CountryEntity

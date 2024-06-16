@@ -1,7 +1,9 @@
 package com.profilemodule.www.shared.select;
 
+import com.profilemodule.www.model.dto.UserLanguageDTO;
 import com.profilemodule.www.model.entity.CountryEntity;
 import com.profilemodule.www.model.service.CountryService;
+import com.profilemodule.www.shared.i18n.UserLocale;
 import com.vaadin.flow.component.combobox.ComboBox;
 
 import java.util.List;
@@ -23,7 +25,9 @@ public class ComboBoxSelect {
 
             return countryService.findAll(query.getPage(), query.getPageSize()).stream();
         });
-        countryEntityComboBox.setItemLabelGenerator(item -> item.getName().get(1));
+        //determine language of the person
+        final UserLanguageDTO userLocale = UserLocale.getUserLocale();
+        countryEntityComboBox.setItemLabelGenerator(item -> item.getName().get(userLocale.getLanguageId().intValue()));
 
         return countryEntityComboBox;
     }

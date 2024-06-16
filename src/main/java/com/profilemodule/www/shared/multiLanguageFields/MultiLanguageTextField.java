@@ -3,6 +3,7 @@ package com.profilemodule.www.shared.multiLanguageFields;
 import com.profilemodule.www.model.entity.LanguageEntity;
 import com.profilemodule.www.model.service.LanguageService;
 import com.profilemodule.www.shared.i18n.CountryFlag;
+import com.profilemodule.www.shared.i18n.UserLocale;
 import com.profilemodule.www.shared.model.dto.MultiLanguageTextFieldDTO;
 import com.vaadin.flow.component.html.Section;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -20,7 +21,7 @@ public class MultiLanguageTextField {
 
         final List<LanguageEntity> allActiveLanguages = languageService.getAllByActive();
 
-        AtomicInteger currentLanguageIndex = new AtomicInteger(1);
+        AtomicInteger currentLanguageIndex = new AtomicInteger(UserLocale.getUserLocale().getLanguageId().intValue());
 
         HorizontalLayout horizontalLayout = new HorizontalLayout();
         horizontalLayout.setSpacing(false);
