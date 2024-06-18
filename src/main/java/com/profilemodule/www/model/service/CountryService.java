@@ -15,4 +15,6 @@ public interface CountryService {
 
     List<CountryEntity> findAllByCodeName(String name, int page, int pageSize);
 
+    boolean isTableEmpty();
+
 }

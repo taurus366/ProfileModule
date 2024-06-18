@@ -12,4 +12,7 @@ import java.util.List;
 public interface CountryRepository extends JpaRepository<CountryEntity, Long> {
 
     List<CountryEntity> findAllByCode(String name, PageRequest pageRequest);
+
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM CountryEntity c")
+    boolean existAny();
 }

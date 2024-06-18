@@ -37,4 +37,9 @@ public class CountryServiceImpl implements CountryService {
     public List<CountryEntity> findAllByCodeName(String name, int page, int pageSize) {
         return countryRepository.findAllByCode(name.toLowerCase(), PageRequest.of(page, pageSize));
     }
+
+    @Override
+    public boolean isTableEmpty() {
+        return countryRepository.existAny();
+    }
 }

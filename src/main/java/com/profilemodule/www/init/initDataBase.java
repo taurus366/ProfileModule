@@ -143,9 +143,9 @@ public class initDataBase implements CommandLineRunner {
         File file = ResourceUtils.getFile("classpath:json/country.json");
         ObjectMapper mapper = new ObjectMapper();
 
-
-        final List<CountryEntity> allCountry = countryRepository.findAll();
-        if(allCountry.isEmpty()) {
+//        final List<CountryEntity> allCountry = countryRepository.findAll();
+        final boolean isNotEmpty = countryRepository.existAny();
+        if(!isNotEmpty) {
             try {
                 // Read JSON file and map it to a list of Country objects
                 CountryDTO[] countries = mapper.readValue(file, CountryDTO[].class);
@@ -172,8 +172,9 @@ public class initDataBase implements CommandLineRunner {
                 e.printStackTrace();
             }
         }
+    }
 
-
+    private void initTranslations() {
 
     }
 }
