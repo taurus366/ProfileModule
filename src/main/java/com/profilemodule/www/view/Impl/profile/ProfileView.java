@@ -120,8 +120,8 @@ public class ProfileView extends VerticalLayout implements HasDynamicTitle {
     }
 
     private void populateFields(VerticalLayout verticalLayout) {
-        LanguageSelector languageSelector = new LanguageSelector(authenticatedUser, languageService);
-        final ComboBox<LanguageEntity> languageSelect = languageSelector.getLanguageSelectorBox("Language", true);
+        LanguageSelector languageSelector = new LanguageSelector(authenticatedUser, languageService, userService);
+        final ComboBox<LanguageEntity> languageSelect = languageSelector.getLanguageSelectorBox(CustomI18nProvider.getTranslationStatic(Intl.getLanguage()), true);
 
         verticalLayout.add(languageSelect);
         verticalLayout.setAlignSelf(Alignment.START, languageSelect);

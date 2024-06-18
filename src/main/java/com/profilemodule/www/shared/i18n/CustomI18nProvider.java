@@ -3,6 +3,7 @@ package com.profilemodule.www.shared.i18n;
 import com.profilemodule.www.config.security.AuthenticatedUser;
 import com.profilemodule.www.model.entity.LanguageEntity;
 import com.profilemodule.www.model.service.LanguageService;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -79,6 +80,8 @@ public class CustomI18nProvider implements I18NProvider {
     }
 
 
+
+
     /// WORKS
     public static AuthenticatedUser user;
     public static String getTranslationStatic(String key) {
@@ -108,12 +111,27 @@ public class CustomI18nProvider implements I18NProvider {
         try {
             value = bundle.getString(key);
         } catch (final MissingResourceException e) {
-            LoggerFactory.getLogger(CustomI18nProvider.class.getName())
-                    .warn("Missing resource", e);
+//            LoggerFactory.getLogger(CustomI18nProvider.class.getName())
+//                    .warn("Missing resource", e);
 //            return "!" + sessionLocale + ": " + key;
             return key;
         }
         return value;
+    }
+
+    public static void updateLocale(boolean refreshPage) {
+        final WrappedSession session = VaadinSession.getCurrent().getSession();
+        AtomicReference<String> sessionLocale = new AtomicReference<>((String) session.getAttribute("locale"));
+            user.get()
+                    .ifPresent(entity -> {
+                        sessionLocale.set(entity.getLanguage().getLanguageEnum().getLocale());
+                        session.setAttribute("locale", sessionLocale.get());
+                    });
+            if(refreshPage) refreshPage();
+    }
+
+    private static void refreshPage() {
+        UI.getCurrent().getPage().reload();
     }
 
     /// WORKS

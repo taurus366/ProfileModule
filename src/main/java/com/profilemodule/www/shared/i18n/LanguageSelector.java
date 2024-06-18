@@ -2,27 +2,19 @@ package com.profilemodule.www.shared.i18n;
 
 import com.profilemodule.www.config.security.AuthenticatedUser;
 import com.profilemodule.www.model.entity.LanguageEntity;
-import com.profilemodule.www.model.entity.UserEntity;
 import com.profilemodule.www.model.service.LanguageService;
 import com.profilemodule.www.model.service.UserService;
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.hibernate.Hibernate;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.proxy.HibernateProxy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Component
@@ -34,6 +26,7 @@ public class LanguageSelector {
     private final AuthenticatedUser user;
 
     private final LanguageService languageService;
+    private final UserService userService;
 
     public ComboBox<LanguageEntity> getLanguageSelectorBox(String title, boolean isFlag) {
         ComboBox<LanguageEntity> languageSelector = new ComboBox<>();
@@ -68,6 +61,16 @@ public class LanguageSelector {
 
         languageSelector.setValue(languageByLocale);
 
+        languageSelector.addValueChangeListener(event -> onChangeLang(event));
+
         return languageSelector;
+    }
+
+    private void onChangeLang(AbstractField.ComponentValueChangeEvent<ComboBox<LanguageEntity>, LanguageEntity> event) {
+        user.get().ifPresent(entity -> {
+            entity.setLanguage(event.getValue());
+            userService.update(entity);
+        });
+       CustomI18nProvider.updateLocale(true);
     }
 }

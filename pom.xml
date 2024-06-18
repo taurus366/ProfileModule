@@ -255,6 +255,17 @@
         <profile>
             <id>production</id>
             <build>
+                <!--    INCLUDE FILES ON BUILD    -->
+                <resources>
+                    <resource>
+                        <directory>../MainModule/src/main/resources</directory>
+                        <includes>
+                            <include>i18n/*.properties</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
+
                 <plugins>
                     <plugin>
                         <groupId>com.vaadin</groupId>
