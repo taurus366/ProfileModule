@@ -28,6 +28,17 @@ import org.springframework.util.ResourceUtils;
 @Component
 public class initDataBase implements CommandLineRunner {
 
+    // ANSI color codes
+    private final String ANSI_GREEN = "\u001B[32m";
+    private final String ANSI_RESET = "\u001B[0m";
+    private final String ANSI_BLACK = "\u001B[30m";
+    private final String ANSI_RED = "\u001B[31m";
+    private final String ANSI_YELLOW = "\u001B[33m";
+    private final String ANSI_BLUE = "\u001B[34m";
+    private final String ANSI_MAGENTA = "\u001B[35m";
+    private final String ANSI_CYAN = "\u001B[36m";
+    private final String ANSI_WHITE = "\u001B[37m";
+
     public static final List<String> scopes = List.of(
             UserEntity.SCOPE,
             GroupEntity.SCOPE,
@@ -260,7 +271,7 @@ public class initDataBase implements CommandLineRunner {
         try {
             Files.createDirectories(Paths.get(filePath).getParent());
             Files.createFile(Paths.get(filePath));
-            System.out.println("Created new properties file: " + filePath);
+            System.out.println(ANSI_YELLOW + "Created new properties file: " + filePath + ANSI_RESET);
         } catch (IOException e) {
             System.err.println("Failed to create properties file: " + filePath);
             e.printStackTrace();
@@ -274,7 +285,7 @@ public class initDataBase implements CommandLineRunner {
         try (OutputStream outputStream = Files.newOutputStream(Paths.get(filePath))) {
 //            properties.store(outputStream, "Updated properties for " + locale);
             properties.store(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), "Updated properties for " + locale);
-            System.out.println("Updated properties file saved: " + filePath);
+            System.out.println(ANSI_GREEN + "Updated properties file saved: " + filePath + ANSI_RESET);
         } catch (IOException e) {
             System.err.println("Failed to save updated properties file: " + filePath);
             e.printStackTrace();
