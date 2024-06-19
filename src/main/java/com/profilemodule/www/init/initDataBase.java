@@ -6,12 +6,19 @@ import com.profilemodule.www.model.entity.*;
 import com.profilemodule.www.model.enums.LanguageEnum;
 import com.profilemodule.www.model.enums.PermissionEnum;
 import com.profilemodule.www.model.repository.*;
+import com.profilemodule.www.shared.annotation.intlClass;
 import org.hibernate.Hibernate;
+import org.reflections.Reflections;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +40,7 @@ public class initDataBase implements CommandLineRunner {
     private final LanguageRepository languageRepository;
     private final PasswordEncoder passwordEncoder;
     private final CountryRepository countryRepository;
-
+    public static final String LOCATION_PREFIX = "MainModule/src/main/resources/i18n/translate_%s.properties";
 
 
 
@@ -44,6 +51,7 @@ public class initDataBase implements CommandLineRunner {
         initLanguages();
         initAdmin();
         initCountry();
+        initTranslations();
     }
 
     public initDataBase(UserRepository userRepository, GroupRepository groupRepository, ScopeRepository scopeRepository, ScopeCleanRepository scopeCleanRepository, LanguageRepository languageRepository, PasswordEncoder passwordEncoder, CountryRepository countryRepository) {
@@ -175,6 +183,106 @@ public class initDataBase implements CommandLineRunner {
     }
 
     private void initTranslations() {
+        Set<String> translations = new HashSet<>();
+        Map<String, String> map = new HashMap<>();
 
+
+        Reflections reflections = new Reflections("com"); // Scan all packages under com
+        Set<Class<?>> intlClasses = reflections.getTypesAnnotatedWith(intlClass.class); // Assuming you annotate Intl classes with @IntlClass
+
+        // Step 1: Collect all translations from @IntlClass annotated classes
+        for (Class<?> intlClass : intlClasses) {
+            Method[] methods = intlClass.getDeclaredMethods();
+
+            for (Method method : methods) {
+                if (method.getName().startsWith("get") && method.getParameterCount() == 0) {
+                    try {
+                        String key = (String) method.invoke(null); // Invoke static getter method
+                        String fieldName = method.getName().substring(3); // Remove "get" prefix
+                        if(!map.containsKey(fieldName)) {
+                            map.put(fieldName, key);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        // Step 2: Check and add missing translations to properties files
+        if(!map.isEmpty()) {
+
+            List<LanguageEntity> activeLanguages = languageRepository.findAllByActiveIsTrue();
+
+            for (LanguageEntity activeLanguage : activeLanguages) {
+
+                final String locale = activeLanguage.getLanguageEnum().getCode();
+
+                Properties existingProperties = loadOrCreateProperties(locale);
+
+                if(existingProperties != null) {
+                    for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
+                        if(!existingProperties.containsKey(stringStringEntry.getKey())) {
+                            existingProperties.setProperty(stringStringEntry.getKey(), stringStringEntry.getValue());
+                    }
+                }
+                    saveProperties(locale, existingProperties);
+                }
+
+
+
+
+            }
+
+
+
+
+        }
     }
+//
+    private Properties loadOrCreateProperties(String locale) {
+        String filePath = String.format(LOCATION_PREFIX, locale);
+        Properties properties = new Properties();
+
+        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
+            properties.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            // Properties file doesn't exist, create a new one
+            System.err.println("Properties file doesn't exist for locale: " + locale);
+            properties = createPropertiesFile(filePath);
+        }
+        return properties;
+    }
+
+    private Properties createPropertiesFile(String filePath) {
+        Properties properties = new Properties();
+
+        try {
+            Files.createDirectories(Paths.get(filePath).getParent());
+            Files.createFile(Paths.get(filePath));
+            System.out.println("Created new properties file: " + filePath);
+        } catch (IOException e) {
+            System.err.println("Failed to create properties file: " + filePath);
+            e.printStackTrace();
+        }
+
+        return properties;
+    }
+
+    private void saveProperties(String locale, Properties properties) {
+        String filePath = String.format(LOCATION_PREFIX, locale);
+        try (OutputStream outputStream = Files.newOutputStream(Paths.get(filePath))) {
+//            properties.store(outputStream, "Updated properties for " + locale);
+            properties.store(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8), "Updated properties for " + locale);
+            System.out.println("Updated properties file saved: " + filePath);
+        } catch (IOException e) {
+            System.err.println("Failed to save updated properties file: " + filePath);
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
 }

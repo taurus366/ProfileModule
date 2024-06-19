@@ -30,6 +30,7 @@ public class CustomI18nProvider implements I18NProvider {
 
     public static final String LOCATION_PREFIX = "i18n/translate";
 
+
     public CustomI18nProvider(LanguageService languageService) {
         this.languageService = languageService;
     }
