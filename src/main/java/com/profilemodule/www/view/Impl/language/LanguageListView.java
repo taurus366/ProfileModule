@@ -3,6 +3,7 @@ package com.profilemodule.www.view.Impl.language;
 import com.profilemodule.www.model.entity.LanguageEntity;
 import com.profilemodule.www.model.service.LanguageService;
 import com.profilemodule.www.shared.i18n.CustomI18nProvider;
+import com.profilemodule.www.shared.i18n.Intl;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -28,7 +29,7 @@ import java.util.List;
 
 //@Component
 @RolesAllowed({LanguageEntity.VIEW_ROLE})
-public class LanguageListView extends VerticalLayout implements HasDynamicTitle {
+public class LanguageListView extends VerticalLayout implements HasDynamicTitle{
 
     public final String UPDATED_LANGUAGE_MESSAGE = "Successfully updated Language";
     public final int NOTIFY_DURATION = 5000;
@@ -78,6 +79,7 @@ public class LanguageListView extends VerticalLayout implements HasDynamicTitle 
                 LocalDateTime time = LocalDateTime.ofInstant(instant, ZoneId.of(extendedClientDetails.getTimeZoneId()));
                 return time.format(formatter);
             }));
+            created.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getCreated()));
 
             final Grid.Column<LanguageEntity> modified = grid.getColumnByKey("modified");
             modified.setRenderer(new TextRenderer<>(item -> {
@@ -86,6 +88,20 @@ public class LanguageListView extends VerticalLayout implements HasDynamicTitle 
                 LocalDateTime time = LocalDateTime.ofInstant(instant, ZoneId.of(extendedClientDetails.getTimeZoneId()));
                 return time.format(formatter);
             }));
+            modified.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getModified()));
+
+            final Grid.Column<LanguageEntity> languageEnum = grid.getColumnByKey("languageEnum");
+            languageEnum.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getLanguage()));
+
+            final Grid.Column<LanguageEntity> id = grid.getColumnByKey("id");
+            id.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getId()));
+
+            final Grid.Column<LanguageEntity> defaultt = grid.getColumnByKey("default");
+            defaultt.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getDefault()));
+
+            final Grid.Column<LanguageEntity> active = grid.getColumnByKey("active");
+            active.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getActive()));
+
         });
 
         return grid;
@@ -125,24 +141,24 @@ public class LanguageListView extends VerticalLayout implements HasDynamicTitle 
         dialog.setCloseOnOutsideClick(false);
 
         languageName = new TextField();
-        languageName.setLabel("Name");
+        languageName.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getName()));
         languageName.setValue(language.getLanguageEnum().getName());
         languageName.setEnabled(false);
         languageName.setPrefixComponent(VaadinIcon.FLAG.create());
         localeName = new TextField();
-        localeName.setLabel("Locale");
+        localeName.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getLocale()));
         localeName.setValue(language.getLanguageEnum().getLocale());
         localeName.setEnabled(false);
         codeName = new TextField();
-        codeName.setLabel("Code");
+        codeName.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getCode()));
         codeName.setValue(language.getLanguageEnum().getCode());
         codeName.setEnabled(false);
         isActive = new Select<>();
-        isActive.setLabel("Is active");
+        isActive.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getActive()));
         isActive.setItems(true, false);
         isActive.setValue(language.isActive());
         isDefault = new Select<>();
-        isDefault.setLabel("Is default");
+        isDefault.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getDefault()));
         isDefault.setItems(true, false);
         isDefault.setValue(language.isDefault());
 
@@ -161,6 +177,6 @@ public class LanguageListView extends VerticalLayout implements HasDynamicTitle 
 
     @Override
     public String getPageTitle() {
-        return CustomI18nProvider.getTranslationStatic(LanguageEntity.TITLE);
+        return LanguageEntity.getTranslateTitle();
     }
 }

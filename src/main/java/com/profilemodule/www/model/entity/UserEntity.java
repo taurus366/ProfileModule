@@ -1,5 +1,7 @@
 package com.profilemodule.www.model.entity;
 
+import com.profilemodule.www.shared.i18n.CustomI18nProvider;
+import com.profilemodule.www.shared.i18n.Intl;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import jakarta.persistence.*;
@@ -26,7 +28,7 @@ public class UserEntity extends BaseEntity {
     public static final String UPDATE_ROLE = SCOPE + "_UPDATE";
     public static final String DELETE_ROLE = SCOPE + "_DELETE";
     public static final String ADD_ROLE = SCOPE + "_ADD";
-    public static final String TITLE = "User list";
+    public static final String TITLE = Intl.getUserList();
     public static final String VIEW_ROUTE = "user_list";
     public static final VaadinIcon icon = VaadinIcon.USERS;
 
@@ -57,4 +59,8 @@ public class UserEntity extends BaseEntity {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<GroupEntity> groups = new HashSet<>();
+
+    public static String getTranslateTitle() {
+        return CustomI18nProvider.getTranslationStatic(TITLE);
+    }
 }

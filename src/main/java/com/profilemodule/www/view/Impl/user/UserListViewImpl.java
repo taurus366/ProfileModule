@@ -28,6 +28,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.TextRenderer;
+import com.vaadin.flow.router.HasDynamicTitle;
 import org.hibernate.Hibernate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,7 +50,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 @Transactional
-public class UserListViewImpl extends VerticalLayout {
+public class UserListViewImpl extends VerticalLayout implements HasDynamicTitle {
 
     public final String ADDED_USER_MESSAGE = "Successfully created new User";
     public final String UPDATED_USER_MESSAGE = "Successfully updated User";
@@ -422,10 +423,10 @@ public class UserListViewImpl extends VerticalLayout {
     }
 
 
-
-
-
-
+    @Override
+    public String getPageTitle() {
+        return UserEntity.getTranslateTitle();
+    }
 }
 
 

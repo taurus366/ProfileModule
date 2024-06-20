@@ -264,6 +264,14 @@
                         </includes>
                         <filtering>true</filtering>
                     </resource>
+
+                    <resource>
+                        <directory>../MainModule/src/main/resources</directory>
+                        <includes>
+                            <include>application.properties</include>
+                        </includes>
+                        <filtering>true</filtering>
+                    </resource>
                 </resources>
 
                 <plugins>

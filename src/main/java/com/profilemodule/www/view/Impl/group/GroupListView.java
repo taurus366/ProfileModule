@@ -8,6 +8,7 @@ import com.profilemodule.www.model.service.GroupService;
 import com.profilemodule.www.model.service.ScopeCleanService;
 import com.profilemodule.www.model.service.ScopeService;
 import com.profilemodule.www.shared.i18n.CustomI18nProvider;
+import com.profilemodule.www.shared.i18n.Intl;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
@@ -39,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Transactional
 @RolesAllowed({GroupEntity.VIEW_ROLE})
-public class GroupListView extends VerticalLayout implements HasDynamicTitle {
+public class GroupListView extends VerticalLayout implements HasDynamicTitle{
 
     public final String ADDED_GROUP_MESSAGE = "Successfully created new Group";
     public final String UPDATED_GROUP_MESSAGE = "Successfully updated Group";
@@ -288,6 +289,7 @@ public class GroupListView extends VerticalLayout implements HasDynamicTitle {
                 LocalDateTime time = LocalDateTime.ofInstant(instant, ZoneId.of(extendedClientDetails.getTimeZoneId()));
                 return time.format(formatter);
             }));
+            created.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getCreated()));
 
             final Grid.Column<GroupEntity> modified = grid.getColumnByKey("modified");
             modified.setRenderer(new TextRenderer<>(item -> {
@@ -296,7 +298,13 @@ public class GroupListView extends VerticalLayout implements HasDynamicTitle {
                 LocalDateTime time = LocalDateTime.ofInstant(instant, ZoneId.of(extendedClientDetails.getTimeZoneId()));
                 return time.format(formatter);
             }));
+            modified.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getModified()));
         });
+        final Grid.Column<GroupEntity> id = grid.getColumnByKey("id");
+        id.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getId()));
+
+        final Grid.Column<GroupEntity> name = grid.getColumnByKey(GroupEntity.Fields.name);
+        name.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getName()));
 
         final Grid.Column<GroupEntity> password = grid.getColumnByKey("scopes");
         password.setVisible(false);
@@ -312,6 +320,6 @@ public class GroupListView extends VerticalLayout implements HasDynamicTitle {
 
     @Override
     public String getPageTitle() {
-        return CustomI18nProvider.getTranslationStatic(GroupEntity.TITLE);
+        return GroupEntity.getTranslateTitle();
     }
 }

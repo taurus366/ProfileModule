@@ -54,6 +54,13 @@ public class CityListView extends VerticalLayout implements HasDynamicTitle {
 
     private VerticalLayout initGrid() {
         GridListDto gridListDto = GridList.initGrid(CityEntity.class);
+        //---
+        final Grid<?> grid1 = gridListDto.getGrid();
+        final Grid.Column<?> country = grid1.getColumnByKey(CityEntity.Fields.countryId);
+        country.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getCountry()));
+        final Grid.Column<?> name = grid1.getColumnByKey(CityEntity.Fields.name);
+        name.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getName()));
+        //---
         VerticalLayout layout = gridListDto.getVerticalLayout();
         @SuppressWarnings("unchecked")
         Grid<CityEntity> grid = (Grid<CityEntity>) gridListDto.getGrid();
@@ -94,10 +101,8 @@ public class CityListView extends VerticalLayout implements HasDynamicTitle {
         columnName.setRenderer(new TextRenderer<>(item1 -> item1.getName().get(languageId.intValue()))) ;
     }
 
-
     @Override
     public String getPageTitle() {
-        final String translationStatic = CustomI18nProvider.getTranslationStatic(Intl.getCity());
-        return translationStatic;
+        return CityEntity.getTranslateTitle();
     }
 }

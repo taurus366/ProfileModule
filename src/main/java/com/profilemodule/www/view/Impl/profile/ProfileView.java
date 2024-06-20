@@ -36,7 +36,7 @@ import java.util.Optional;
 
 //@Component
 @PermitAll
-public class ProfileView extends VerticalLayout implements HasDynamicTitle {
+public class ProfileView extends VerticalLayout implements HasDynamicTitle{
 
     public final String UPDATED_USER_MESSAGE = "Successfully updated User";
     public final String UPLOADED_PICTURE_MESSAGE = "Successfully upload Picture";
@@ -72,21 +72,21 @@ public class ProfileView extends VerticalLayout implements HasDynamicTitle {
 
     private Dialog changePasswordDialog() {
         Dialog changePasswordDialog = new Dialog();
-        changePasswordDialog.setHeaderTitle("Change password");
+        changePasswordDialog.setHeaderTitle(CustomI18nProvider.getTranslationStatic(Intl.getChangePassword()));
 
         VerticalLayout layout = new VerticalLayout();
 
         TextField newPassword = new TextField();
-        newPassword.setLabel("New password");
+        newPassword.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getNewPassword()));
         newPassword.setRequired(true);
-        newPassword.setErrorMessage("Please fill the field");
+        newPassword.setErrorMessage(CustomI18nProvider.getTranslationStatic(Intl.getPleaseFillTheField()));
         newPassword.setRequiredIndicatorVisible(true);
         layout.add(newPassword);
 
         TextField repeatPassword = new TextField();
-        repeatPassword.setLabel("Repeat password");
+        repeatPassword.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getRepeatPassword()));
         repeatPassword.setRequired(true);
-        repeatPassword.setErrorMessage("Please fill the field");
+        repeatPassword.setErrorMessage(CustomI18nProvider.getTranslationStatic(Intl.getPleaseFillTheField()));
         repeatPassword.setRequiredIndicatorVisible(true);
         layout.add(repeatPassword);
 
@@ -94,8 +94,8 @@ public class ProfileView extends VerticalLayout implements HasDynamicTitle {
             newPassword.setInvalid(newPassword.getValue().isEmpty());
 
             if(repeatPassword.getValue().isEmpty() || !newPassword.getValue().equals(repeatPassword.getValue())) {
-              if(repeatPassword.getValue().isEmpty()) repeatPassword.setErrorMessage("Please fill the field");
-              else repeatPassword.setErrorMessage("Fields are not equal");
+              if(repeatPassword.getValue().isEmpty()) repeatPassword.setErrorMessage(CustomI18nProvider.getTranslationStatic(Intl.getPleaseFillTheField()));
+              else repeatPassword.setErrorMessage(CustomI18nProvider.getTranslationStatic(Intl.getFieldsAreNotEqual()));
               repeatPassword.setInvalid(true);
             } else {
                 repeatPassword.setInvalid(false);
@@ -129,12 +129,12 @@ public class ProfileView extends VerticalLayout implements HasDynamicTitle {
         userImage(verticalLayout);
 
         TextField username = new TextField();
-        username.setLabel("Username");
+        username.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getUsername()));
         verticalLayout.add(username);
         verticalLayout.setAlignSelf(Alignment.CENTER, username);
 
         TextField name = new TextField();
-        name.setLabel("Names");
+        name.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getNames()));
         verticalLayout.add(name);
         verticalLayout.setAlignSelf(Alignment.CENTER, name);
 
@@ -146,11 +146,11 @@ public class ProfileView extends VerticalLayout implements HasDynamicTitle {
         flexLayout.setFlexWrap(FlexLayout.FlexWrap.WRAP);
 
         NumberField phone = new NumberField();
-        phone.setLabel("Phone number");
+        phone.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getPhoneNumber()));
         flexLayout.add(phone);
 
         TextField email = new TextField();
-        email.setLabel("Email address");
+        email.setLabel(CustomI18nProvider.getTranslationStatic(Intl.getEmailAddress()));
         flexLayout.add(email);
 
 
@@ -158,7 +158,7 @@ public class ProfileView extends VerticalLayout implements HasDynamicTitle {
         verticalLayout.setAlignSelf(Alignment.CENTER, flexLayout);
 
         Button saveBtnFields = new Button();
-        saveBtnFields.setText("Save");
+        saveBtnFields.setText(CustomI18nProvider.getTranslationStatic(Intl.getSave()));
         saveBtnFields.addClickListener(event -> {
             final Optional<UserEntity> userEntity = userService.get(userId);
             if(userEntity.isPresent()) {
@@ -182,7 +182,7 @@ public class ProfileView extends VerticalLayout implements HasDynamicTitle {
 
 
         Button newPassword = new Button();
-        newPassword.setText("New password");
+        newPassword.setText(CustomI18nProvider.getTranslationStatic(Intl.getNewPassword()));
         newPassword.addClickListener(event -> changePasswordDialog().open());
         verticalLayout.add(newPassword);
         verticalLayout.setAlignSelf(Alignment.CENTER, newPassword);
@@ -252,7 +252,7 @@ public class ProfileView extends VerticalLayout implements HasDynamicTitle {
                     .addThemeVariants(NotificationVariant.LUMO_ERROR);
         });
         upload.setDropLabel(new Span("jpeg, png, jpg"));
-        upload.setUploadButton(new Button("Upload Picture"));
+        upload.setUploadButton(new Button(CustomI18nProvider.getTranslationStatic(Intl.getUploadPicture())));
 
         layout1.add(profileImage, upload);
 
@@ -264,7 +264,6 @@ public class ProfileView extends VerticalLayout implements HasDynamicTitle {
 
     @Override
     public String getPageTitle() {
-        final String title = CustomI18nProvider.getTranslationStatic(Intl.getProfile());
-        return title;
+        return CustomI18nProvider.getTranslationStatic(Intl.getProfile());
     }
 }

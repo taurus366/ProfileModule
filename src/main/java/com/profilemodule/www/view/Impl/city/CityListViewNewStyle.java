@@ -11,7 +11,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import jakarta.annotation.security.PermitAll;
 
-@PageTitle(CityEntity.TITLE)
+//@PageTitle(CityEntity.TITLE)
 //@Route(value = CityEntity.VIEW_ROUTE, absolute = true)
 @PermitAll
 public class CityListViewNewStyle extends VerticalLayout {

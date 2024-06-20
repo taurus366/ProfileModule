@@ -52,6 +52,8 @@ public class initDataBase implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
     private final CountryRepository countryRepository;
     public static final String LOCATION_PREFIX = "MainModule/src/main/resources/i18n/translate_%s.properties";
+//    public static final String LOCATION_PREFIX = "src/main/resources/i18n/translate_%s.properties";
+
 
 
 
@@ -62,6 +64,8 @@ public class initDataBase implements CommandLineRunner {
         initLanguages();
         initAdmin();
         initCountry();
+        // RUN IT WHEN IS START LOCAL TO WORK PROPERLY !
+        // ON RUNNING PRODUCTION JUST DEACTIVATE THIS!
         initTranslations();
     }
 

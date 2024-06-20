@@ -1,6 +1,8 @@
 package com.profilemodule.www.shared.grids;
 
 import com.profilemodule.www.model.entity.BaseEntity;
+import com.profilemodule.www.shared.i18n.CustomI18nProvider;
+import com.profilemodule.www.shared.i18n.Intl;
 import com.profilemodule.www.shared.model.dto.GridListDto;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.UI;
@@ -46,6 +48,7 @@ public class GridList {
            final Renderer<T> createdRendererCreated = new TextRenderer<>(labelGeneratorCreated);
            created.setRenderer(createdRendererCreated);
            created.setTooltipGenerator(labelGeneratorCreated);
+           created.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getCreated()));
 
            final Grid.Column<T> modified = grid.getColumnByKey("modified");
 ///           OLD USE
@@ -59,6 +62,10 @@ public class GridList {
            final Renderer<T> createdRendererModified = new TextRenderer<>(labelGeneratorModified);
            modified.setRenderer(createdRendererModified);
            modified.setTooltipGenerator(labelGeneratorModified);
+           modified.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getModified()));
+
+           final Grid.Column<T> id = grid.getColumnByKey("id");
+           id.setHeader(CustomI18nProvider.getTranslationStatic(Intl.getId()));
        });
 
        final List<Button> buttons = initBtns();
